@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,12 +7,14 @@ public class Project {
     private String fechaVencimiento;
     private List<Tarea> tareas;
 
-    public Proyecto(String titulo, String descripcion, String fechaVencimiento) {
+    public Project(String titulo, String descripcion, String fechaVencimiento) {
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.fechaVencimiento = fechaVencimiento;
         this.tareas = new ArrayList<>();
     }
+
+    // Getters y setters para los atributos
 
     public String getTitulo() {
         return titulo;
@@ -45,5 +46,18 @@ public class Project {
 
     public void setTareas(List<Tarea> tareas) {
         this.tareas = tareas;
+    }
+
+    public void crearTarea(String titulo, String descripcion, String fechaVencimiento) {
+        Tarea nuevaTarea = new Tarea(titulo, descripcion, fechaVencimiento);
+        tareas.add(nuevaTarea);
+    }
+
+    public void asignarTarea(Tarea tarea, Usuario usuario) {
+        //pendiente
+    }
+
+    public void generarReporte() {
+        // pendite
     }
 }
