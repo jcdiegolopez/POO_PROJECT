@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 
 public class DatabaseConnector {
@@ -32,8 +33,9 @@ public class DatabaseConnector {
         }
     }
 
-    public void getAllUsuariosInfo() {
+    public ArrayList<Usuario> getAllUsuariosInfo() {
        openConnection();
+       ArrayList<Usuario> result = new ArrayList<Usuario>();
         try {
             if (connection != null) {
                 
@@ -46,45 +48,34 @@ public class DatabaseConnector {
                     String nombre = resultSet.getString("NOMBRE");
                     String user = resultSet.getString("USER");
                     String password = resultSet.getString("PASSWORD");
-
-                    System.out.println("ID: " + id);
-                    System.out.println("Nombre: " + nombre);
-                    System.out.println("User: " + user);
-                    System.out.println("Password: " + password);
-                    System.out.println("-----------");
+                    String apellido = resultSet.getString("APELLIDO");
+                    String mail = resultSet.getString("MAIL");
+                    String sede = resultSet.getString("SEDE");
+                    String tipo = resultSet.getString("TIPO");
+                    System.out.println(tipo);
+                    switch (tipo) {
+                        case "MAESTRO":
+                            result.add(new Maestro(id, nombre, user, password, apellido,mail, sede));
+                            break;
+                        case "ESTUDIANTE":
+                            result.add(new Estudiante(id, nombre, user, password, apellido,mail, sede));
+                            break;
+                        default:
+                            break;
+                    }
+                    
                 }
-
+                
                 resultSet.close();
                 statement.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return result;
     }
 
-    public void loginUser(String  username, String password){
-        try {
-            openConnection();
-            if (connection != null) {
-                
-                Statement statement = connection.createStatement();
-                String query = "SELECT ID_USUARIOS FROM USUARIOS WHERE USER = "+username ;
-                ResultSet resultSet = statement.executeQuery(query);
 
-                while (resultSet.next()) {
-                    int id = resultSet.getInt("ID_USUARIOS");
-                    
-
-                }
-
-                resultSet.close();
-                statement.close();
-            }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     public void closeConnection() {
         try {
