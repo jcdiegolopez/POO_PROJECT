@@ -62,6 +62,30 @@ public class DatabaseConnector {
         }
     }
 
+    public void loginUser(String  username, String password){
+        try {
+            openConnection();
+            if (connection != null) {
+                
+                Statement statement = connection.createStatement();
+                String query = "SELECT ID_USUARIOS FROM USUARIOS WHERE USER = "+username ;
+                ResultSet resultSet = statement.executeQuery(query);
+
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("ID_USUARIOS");
+                    
+
+                }
+
+                resultSet.close();
+                statement.close();
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void closeConnection() {
         try {
             if (connection != null) {

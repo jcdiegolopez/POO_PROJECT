@@ -6,9 +6,13 @@ public class Driver {
     public static void main(String[] args) throws Exception {
         DatabaseConnector db = new DatabaseConnector();
         
-        db.getAllUsuariosInfo();
 
         
        
+    }
+
+    public static void login(String username, String password) throws Exception {
+
+
     }
 }
