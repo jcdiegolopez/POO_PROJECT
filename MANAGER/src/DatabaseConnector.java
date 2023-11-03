@@ -14,7 +14,7 @@ public class DatabaseConnector {
         try {
 
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proyecto_poo", "root", "admin123");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://poo@5.161.118.98:33014/proyectopoo?user=poo&password=secret");
             System.out.println(connection);
             System.out.println("Connected to the database.");
         } catch ( Exception e) {
@@ -26,7 +26,7 @@ public class DatabaseConnector {
         if (connection == null) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/proyecto_poo", "root", "admin123");
+                connection = DriverManager.getConnection("jdbc:mysql://poo@5.161.118.98:33014/proyectopoo?user=poo&password=secret");
             } catch (Exception e) {
                 System.out.println(e);
             }
@@ -40,7 +40,7 @@ public class DatabaseConnector {
             if (connection != null) {
                 
                 Statement statement = connection.createStatement();
-                String query = "SELECT * FROM USUARIOS";
+                String query = "SELECT * FROM usuarios";
                 ResultSet resultSet = statement.executeQuery(query);
 
                 while (resultSet.next()) {
