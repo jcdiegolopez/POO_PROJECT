@@ -1,10 +1,11 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
-
+import java.sql.PreparedStatement;
 
 public class DatabaseConnector {
     private Connection connection;
@@ -22,18 +23,18 @@ public class DatabaseConnector {
         }
     }
 
-    public void openConnection() {
+    public void openConnection() throws Exception {
         if (connection == null) {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection("jdbc:mysql://poo@5.161.118.98:33014/proyectopoo?user=poo&password=secret");
             } catch (Exception e) {
-                System.out.println(e);
+                throw new Exception(e);
             }
         }
     }
 
-    public ArrayList<Usuario> getAllUsuariosInfo() {
+    public ArrayList<Usuario> getAllUsuariosInfo() throws Exception {
        openConnection();
        ArrayList<Usuario> result = new ArrayList<Usuario>();
         try {
@@ -52,7 +53,6 @@ public class DatabaseConnector {
                     String mail = resultSet.getString("MAIL");
                     String sede = resultSet.getString("SEDE");
                     String tipo = resultSet.getString("TIPO");
-                    System.out.println(tipo);
                     switch (tipo) {
                         case "MAESTRO":
                             result.add(new Maestro(id, nombre, user, password, apellido,mail, sede));
@@ -70,9 +70,31 @@ public class DatabaseConnector {
                 statement.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception(e);
         }
         return result;
+    }
+
+    public void registrarUsuario(String nombre, String usuario, String password, String apellido, String mail, String sede, String tipo) throws Exception {
+       openConnection();
+       if(connection != null){
+            String query = "INSERT INTO `usuarios`(NOMBRE,USER,PASSWORD,APELLIDO,MAIL,SEDE,TIPO) VALUES (?,?,?,?,?,?,?)";
+            PreparedStatement preparedStatement = connection.PreparedStatement(query);
+            // Establezca los valores para los parámetros de la consulta INSERT
+            PreparedStatement.setString(1, nombre);
+            PreparedStatement.setString(2, usuario);
+            PreparedStatement.setString(3, password);
+            PreparedStatement.setString(4, apellido);
+            PreparedStatement.setString(5, mail);
+            PreparedStatement.setString(6, sede);
+            PreparedStatement.setString(7, tipo);
+            // Ejecute la consulta INSERT
+            PreparedStatement.executeUpdate();
+            
+            
+       }else{
+        throw new Exception("No se pudo conectar con la base de datos");
+       }
     }
 
 
