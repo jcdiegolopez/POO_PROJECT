@@ -6,6 +6,7 @@ public class Tarea {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private String descripcion;
+    private int calificacion;
     private boolean finalizada;
 
     public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion) {
@@ -15,6 +16,14 @@ public class Tarea {
         this.fechaFin = fechaFin;
         this.descripcion = descripcion;
         this.finalizada = false; // Inicialmente la tarea no está finalizada
+    }
+
+    public int getCalificacion(){
+        return this.calificacion;
+    }
+
+    public void setCalificacion(int calificacion) {
+        this.calificacion = calificacion;
     }
 
     public String getNombre() {
