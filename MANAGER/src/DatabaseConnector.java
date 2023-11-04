@@ -79,18 +79,23 @@ public class DatabaseConnector {
        openConnection();
        if(connection != null){
             String query = "INSERT INTO `usuarios`(NOMBRE,USER,PASSWORD,APELLIDO,MAIL,SEDE,TIPO) VALUES (?,?,?,?,?,?,?)";
-            PreparedStatement preparedStatement = connection.PreparedStatement(query);
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
             // Establezca los valores para los parámetros de la consulta INSERT
-            PreparedStatement.setString(1, nombre);
-            PreparedStatement.setString(2, usuario);
-            PreparedStatement.setString(3, password);
-            PreparedStatement.setString(4, apellido);
-            PreparedStatement.setString(5, mail);
-            PreparedStatement.setString(6, sede);
-            PreparedStatement.setString(7, tipo);
-            // Ejecute la consulta INSERT
-            PreparedStatement.executeUpdate();
             
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, usuario);
+            preparedStatement.setString(3, password);
+            preparedStatement.setString(4, apellido);
+            preparedStatement.setString(5, mail);
+            preparedStatement.setString(6, sede);
+            preparedStatement.setString(7, tipo);
+            System.out.println(query);
+            int filasAfectadas = preparedStatement.executeUpdate();
+            if (filasAfectadas > 0) {
+                System.out.println("Inserción exitosa.");
+            } else {
+                throw new Exception("La inserción no tuvo éxito.");
+            }
             
        }else{
         throw new Exception("No se pudo conectar con la base de datos");

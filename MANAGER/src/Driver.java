@@ -13,7 +13,8 @@ public class Driver {
         db = new DatabaseConnector();
         reloadUsers();
         scanner = new Scanner(System.in);
-        while(account == null){
+        boolean loginCicle = true;
+        while(account == null && loginCicle){
             System.out.println("1. Login");
             System.out.println("2. Sign in");
             System.out.println("3. Salir: ");
@@ -23,11 +24,13 @@ public class Driver {
                 case 1:
                     
                     try {
+                        scanner.nextLine();
                         System.out.println("Ingrese su correo electronico");
                         String email = scanner.nextLine();
                         System.out.println("Ingrese su contraseña");
-                        String password = scanner.nextLine();
+                        String password = scanner.nextLine(); 
                         account = loginUser(email, password);
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -49,9 +52,8 @@ public class Driver {
                         String mail = scanner.nextLine();
                         System.out.print("Sede: ");
                         String sede = scanner.nextLine();
-                        scanner.nextLine();
-                        System.out.print("1.Estudiante ");
-                        System.out.print("2.Maestro ");
+                        System.out.println("1.Estudiante ");
+                        System.out.println("2.Maestro ");
                         System.out.print("Tipo: ");
                         int sel1 = scanner.nextInt();
                         String tipo = (sel1==1)? "ESTUDIANTE" : "MAESTRO";
@@ -65,10 +67,25 @@ public class Driver {
                     break;
                 case 3: 
                     System.out.println("Saliendo del programa");
-                    
+                    loginCicle = false;
                     break;
                 default:
                     System.out.println("Opcion no valida");
+                    break;
+            }
+        }
+        if(account != null){
+            System.out.println("Usuario ingresado con exito!");
+            switch (account.getTipo()) {
+                case "ESTUDIANTE":
+                    menuEstudiante();
+                    break;
+                case "MAESTRO":
+                    menuMaestro();
+                    break;
+            
+                default:
+                    System.out.println("Error no identificado");
                     break;
             }
         }
@@ -77,7 +94,25 @@ public class Driver {
 
         
     }
-
+    public static void menuEstudiante(){
+        System.out.println("================================= MENU ESTUDIANTE =================================");
+        System.out.println("1. Crear Proyecto");
+        System.out.println("2. Listar Proyectos");
+        System.out.println("3. Salir");
+        System.out.print("Opcion: ");
+        int opt = scanner.nextInt();
+        switch (opt) {
+        
+        }
+        
+        
+    }
+    public static void menuMaestro(){
+        System.out.println("================================= MENU ESTUDIANTE =================================");
+        System.out.println("1. Ver Proyectos");
+        System.out.println("2. Salir");
+        
+    }
     public static Usuario loginUser(String email, String password) throws Exception {
         for (Usuario usuario : usuarios) {
             if (usuario.getMail().equals(email) && usuario.getPassword().equals(password)) {
