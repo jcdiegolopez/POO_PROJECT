@@ -1,21 +1,52 @@
+import java.time.LocalDate;
+
 public class Tarea {
-    private String titulo;
+    private String nombre;
+    private Estudiante estudianteAsignado;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
     private String descripcion;
-    private String fechaVencimiento;
-    private Usuario asignadoA;
+    private boolean finalizada;
 
-    public Tarea(String titulo, String descripcion, String fechaVencimiento) {
-        this.titulo = titulo;
+    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion) {
+        this.nombre = nombre;
+        this.estudianteAsignado = estudianteAsignado;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
         this.descripcion = descripcion;
-        this.fechaVencimiento = fechaVencimiento;
+        this.finalizada = false; // Inicialmente la tarea no está finalizada
     }
 
-    public String getTitulo() {
-        return titulo;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public Estudiante getEstudianteAsignado() {
+        return estudianteAsignado;
+    }
+
+    public void setEstudianteAsignado(Estudiante estudianteAsignado) {
+        this.estudianteAsignado = estudianteAsignado;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
     }
 
     public String getDescripcion() {
@@ -26,19 +57,12 @@ public class Tarea {
         this.descripcion = descripcion;
     }
 
-    public String getFechaVencimiento() {
-        return fechaVencimiento;
+    public boolean isFinalizada() {
+        return finalizada;
     }
 
-    public void setFechaVencimiento(String fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
+    public void marcarComoFinalizada() {
+        finalizada = true;
     }
 
-    public Usuario getAsignadoA() {
-        return asignadoA;
-    }
-
-    public void setAsignadoA(Usuario asignadoA) {
-        this.asignadoA = asignadoA;
-    }
 }
