@@ -78,10 +78,19 @@ public class Driver {
             System.out.println("Usuario ingresado con exito!");
             switch (account.getTipo()) {
                 case "ESTUDIANTE":
-                    menuEstudiante();
+                    try {
+                        menuEstudiante();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    
                     break;
                 case "MAESTRO":
-                    menuMaestro();
+                    try {
+                        menuMaestro();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     break;
             
                 default:
@@ -94,19 +103,35 @@ public class Driver {
 
         
     }
-    public static void menuEstudiante(){
-        System.out.println("================================= MENU ESTUDIANTE =================================");
-        System.out.println("1. Crear Proyecto");
-        System.out.println("2. Listar Proyectos");
-        System.out.println("3. Salir");
-        System.out.print("Opcion: ");
-        int opt = scanner.nextInt();
-        switch (opt) {
+    public static void menuEstudiante() throws Exception {
+        boolean continuar = true;
         
+        while (continuar) {
+            System.out.println("===================== MENU ESTUDIANTE =====================");
+            System.out.println("1. Crear Proyecto");
+            System.out.println("2. Seleccionar Proyecto");
+            System.out.println("3. Salir");
+            System.out.print("Elija una opción: ");
+            int opt = scanner.nextInt();
+            
+            switch (opt) {
+                case 1:
+                    // imple
+                    break;
+                case 2:
+                    // imple
+                    break;
+                case 3:
+                    System.out.println("Saliendo del menú estudiante.");
+                    continuar = false;
+                    break;
+                default:
+                    System.out.println("Opción no válida");
+                    break;
+            }
         }
-        
-        
     }
+    
     public static void menuMaestro(){
         System.out.println("================================= MENU ESTUDIANTE =================================");
         System.out.println("1. Ver Proyectos");
