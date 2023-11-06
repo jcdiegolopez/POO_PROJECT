@@ -8,14 +8,16 @@ public class Tarea {
     private String descripcion;
     private int calificacion;
     private boolean finalizada;
+    private Usuario encargado;
 
-    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion) {
+    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion, Usuario encargado) {
         this.nombre = nombre;
         this.estudianteAsignado = estudianteAsignado;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.descripcion = descripcion;
         this.finalizada = false; // Inicialmente la tarea no está finalizada
+        this.encargado = encargado;
     }
 
     public int getCalificacion(){
