@@ -7,7 +7,7 @@ public class Maestro extends Usuario {
 
     @Override
     public String getTipo() {
-        return "Maestro";
+        return "MAESTRO";
     }
 
 

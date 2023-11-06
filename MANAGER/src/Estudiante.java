@@ -6,7 +6,7 @@ public class Estudiante extends Usuario {
     
     @Override
     public String getTipo() {
-        return "Estudiante";
+        return "ESTUDIANTE";
     }
 
     @Override
