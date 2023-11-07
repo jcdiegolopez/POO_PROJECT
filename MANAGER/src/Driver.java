@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 
 public class Driver {
     public static ArrayList<Usuario> usuarios = null;
@@ -12,6 +14,7 @@ public class Driver {
     public static Scanner scanner;
     public static DatabaseConnector db;
     public static ArrayList<Proyecto> proyectos = null;
+    private static ArrayList<Tarea> tareas = new ArrayList<Tarea>();
 
     public static void main(String[] args) throws Exception {
         db = new DatabaseConnector();
@@ -263,7 +266,7 @@ public class Driver {
                     break;
                 case 2:
                     // Crear tareas para el proyecto
-                    //createTask(proyecto);
+                    createTask();                    
                     break;
                 case 3:
                     // Acceder al chat del proyecto
@@ -274,10 +277,14 @@ public class Driver {
                     //gradeTasks(proyecto);
                     break;
                 case 5:
+                    // Cerrar la tarea (implementa la lógica necesaria)
+                    //closeTask(proyecto);
+                    break;
+                case 6:
                     // Cerrar el proyecto (implementa la lógica necesaria)
                     //closeProject(proyecto);
                     break;
-                case 6:
+                case 7:
                     // Regresar al menú anterior
                     return;
                 default:
@@ -395,9 +402,53 @@ public class Driver {
     }
 }
 
+    public static void createTask() {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            System.out.println("========== CREACIÓN DE TAREA ==========");
+            System.out.print("Nombre de la tarea: ");
+            String tareaNombre = scanner.nextLine();
+            System.out.print("Descripción de la tarea: ");
+            String tareaDescripcion = scanner.nextLine();
+
+            // Solicitar el ID del estudiante al que se asignará la tarea
+            System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
+            int estudianteId = scanner.nextInt();
+
+            // Buscar al estudiante por su ID
+            Estudiante estudianteAsignado = findEstudianteById(estudianteId);
+
+            if (estudianteAsignado != null) {
+                // Obtén la fecha de inicio automáticamente
+                LocalDate fechaInicio = LocalDate.now();
+
+                // Crea la tarea y asigna al estudiante
+                Tarea tarea = new Tarea(tareaNombre, estudianteAsignado, fechaInicio, null, tareaDescripcion, account);
+                tareas.add(tarea); // Asegúrate de que 'tareas' sea una lista en tu clase
+                System.out.println("Tarea asignada con éxito.");
+            } else {
+                System.out.println("Estudiante no encontrado con el ID proporcionado.");
+            }
+        } catch (NoSuchElementException e) {
+            System.err.println("Entrada no válida. Asegúrate de ingresar valores numéricos válidos para el ID del estudiante.");
+        } finally {
+            scanner.close();
+        }
+    }
+
     public static void reloadProjects()throws Exception{
         proyectos = db.getAllProjects();
     }
+
+    public static Estudiante findEstudianteById(int estudianteId) {
+        for (Usuario usuario : usuarios) {
+            if (usuario instanceof Estudiante && usuario.getIdusuario() == estudianteId) {
+                return (Estudiante) usuario; // Se ha encontrado el estudiante
+            }
+        }
+        return null; // No se encontró el estudiante con el ID proporcionado
+    }
+    
 
     public static ArrayList<Proyecto> filtrarProyectosPorUsuarioLogueado() {
         ArrayList<Proyecto> proyectosFiltrados = new ArrayList<>();
