@@ -411,20 +411,15 @@ public class Driver {
             System.out.print("Descripción de la tarea: ");
             String tareaDescripcion = scanner.nextLine();
 
-            // Solicitar el ID del estudiante al que se asignará la tarea
             System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
             int estudianteId = scanner.nextInt();
 
-            // Buscar al estudiante por su ID
             Estudiante estudianteAsignado = findEstudianteById(estudianteId);
 
             if (estudianteAsignado != null) {
-                // Obtén la fecha de inicio automáticamente
                 LocalDate fechaInicio = LocalDate.now();
-
-                // Crea la tarea y asigna al estudiante
-                Tarea tarea = new Tarea(tareaNombre, estudianteAsignado, fechaInicio, null, tareaDescripcion, account);
-                tareas.add(tarea); // Asegúrate de que 'tareas' sea una lista en tu clase
+                Tarea tarea = new Tarea(tareaNombre, estudianteAsignado, fechaInicio, tareaDescripcion, idUsuarioAsignado, account);
+                tareas.add(tarea);
                 System.out.println("Tarea asignada con éxito.");
             } else {
                 System.out.println("Estudiante no encontrado con el ID proporcionado.");
@@ -443,10 +438,10 @@ public class Driver {
     public static Estudiante findEstudianteById(int estudianteId) {
         for (Usuario usuario : usuarios) {
             if (usuario instanceof Estudiante && usuario.getIdusuario() == estudianteId) {
-                return (Estudiante) usuario; // Se ha encontrado el estudiante
+                return (Estudiante) usuario;
             }
         }
-        return null; // No se encontró el estudiante con el ID proporcionado
+        return null;
     }
     
 

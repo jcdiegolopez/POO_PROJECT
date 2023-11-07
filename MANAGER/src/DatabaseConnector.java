@@ -216,6 +216,40 @@ public class DatabaseConnector {
         }
     }
 
+    public void insertarTarea(Tarea tarea) throws SQLException {
+        if (connection != null) {
+            PreparedStatement stmt = null;
+    
+            try {
+                String insertQuery = "INSERT INTO tareas (NOMBRE, DESCRIPCION, FECHA_INICIO, FECHA_FIN, CALIFICACION, FINALIZADA, ID_PROYECTO, ID_USUARIOS) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    
+                stmt = connection.prepareStatement(insertQuery);
+                stmt.setString(1, tarea.getNombre());
+                stmt.setString(2, tarea.getDescripcion());
+                stmt.setDate(3, java.sql.Date.valueOf(tarea.getFechaInicio()));
+                stmt.setDate(4, java.sql.Date.valueOf(tarea.getFechaFin()));
+                stmt.setInt(5, tarea.getCalificacion());
+                stmt.setBoolean(6, tarea.isFinalizada());
+                stmt.setInt(7, tarea.getIdProyecto()); // Reemplaza esto con la forma correcta de obtener el ID del proyecto
+                stmt.setInt(8, tarea.getIdUsuarioAsignado()); // Reemplaza esto con la forma correcta de obtener el ID del usuario asignado
+    
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Tarea insertada exitosamente en la base de datos.");
+                } else {
+                    System.out.println("No se pudo insertar la tarea en la base de datos.");
+                }
+            } finally {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            }
+        }
+    }
+    
+    
+
     public void closeConnection() {
         try {
             if (connection != null) {

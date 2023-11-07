@@ -9,15 +9,40 @@ public class Tarea {
     private int calificacion;
     private boolean finalizada;
     private Usuario encargado;
+    private int idProyecto; // ID del proyecto al que está asignada la tarea
+    private int idUsuarioAsignado; // ID del usuario asignado a la tarea
 
-    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion, Usuario encargado) {
+    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion, int idProyecto, int idUsuarioAsignado, Usuario encargado) {
         this.nombre = nombre;
         this.estudianteAsignado = estudianteAsignado;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.descripcion = descripcion;
         this.finalizada = false; // Inicialmente la tarea no está finalizada
+        this.idProyecto = idProyecto;
+        this.idUsuarioAsignado = idUsuarioAsignado;
         this.encargado = encargado;
+    }
+
+    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, String descripcion, int idProyecto, int idUsuarioAsignado, Usuario encargado) {
+        this(nombre, estudianteAsignado, fechaInicio, null, descripcion, idProyecto, idUsuarioAsignado, encargado);
+    }
+
+    // Métodos getter y setter para los nuevos campos (idProyecto e idUsuarioAsignado)
+    public int getIdProyecto() {
+        return idProyecto;
+    }
+
+    public void setIdProyecto(int idProyecto) {
+        this.idProyecto = idProyecto;
+    }
+
+    public int getIdUsuarioAsignado() {
+        return idUsuarioAsignado;
+    }
+
+    public void setIdUsuarioAsignado(int idUsuarioAsignado) {
+        this.idUsuarioAsignado = idUsuarioAsignado;
     }
 
     public int getCalificacion(){
