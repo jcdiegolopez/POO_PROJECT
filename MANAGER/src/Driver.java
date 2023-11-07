@@ -21,9 +21,8 @@ public class Driver {
         boolean loginCicle = true;
 
         while (loginCicle) {
-            System.out.println("1. Login");
-            System.out.println("2. Sign in");
-            System.out.println("3. Salir");
+            System.out.println("1. Iniciar sesión");
+            System.out.println("2. Salir");
             System.out.println("Ingrese la opción que desea: ");
             int opt = scanner.nextInt();
 
@@ -48,34 +47,6 @@ public class Driver {
                     }
                     break;
                 case 2:
-                    System.out.println("==================== CREACIÓN DE USUARIO =====================");
-                    try {
-                        scanner.nextLine();
-                        System.out.print("Nombre: ");
-                        String nombre = scanner.nextLine();
-                        System.out.print("Usuario: ");
-                        String usuario = scanner.nextLine();
-                        System.out.print("Contraseña: ");
-                        String password = scanner.nextLine();
-                        System.out.print("Apellido: ");
-                        String apellido = scanner.nextLine();
-                        System.out.print("Correo Electrónico: ");
-                        String mail = scanner.nextLine();
-                        System.out.print("Sede: ");
-                        String sede = scanner.nextLine();
-                        System.out.println("1.Estudiante ");
-                        System.out.println("2.Maestro ");
-                        System.out.print("Tipo: ");
-                        int sel1 = scanner.nextInt();
-                        String tipo = (sel1 == 1) ? "ESTUDIANTE" : "MAESTRO";
-
-                        RegisterUser(nombre, usuario, password, apellido, mail, sede, tipo);
-                        System.out.println("Usuario creado con éxito!");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case 3:
                     System.out.println("Saliendo del programa");
                     loginCicle = false;
                     break;
@@ -157,7 +128,8 @@ public class Driver {
             System.out.println("================================= MENU MAESTRO =================================");
             System.out.println("1. Ver Proyectos");
             System.out.println("2. Crear Proyectos");
-            System.out.println("3. Salir");
+            System.out.println("3. Crear nuevo usuario");
+            System.out.println("4. Salir");
             System.out.print("Elija una opción: ");
             int opt = scanner.nextInt();
     
@@ -174,6 +146,34 @@ public class Driver {
                     createProject();
                     break;
                 case 3:
+                    System.out.println("==================== CREACIÓN DE USUARIO =====================");
+                    try {
+                        scanner.nextLine();
+                        System.out.print("Nombre: ");
+                        String nombre = scanner.nextLine();
+                        System.out.print("Usuario: ");
+                        String usuario = scanner.nextLine();
+                        System.out.print("Contraseña: ");
+                        String password = scanner.nextLine();
+                        System.out.print("Apellido: ");
+                        String apellido = scanner.nextLine();
+                        System.out.print("Correo Electrónico: ");
+                        String mail = scanner.nextLine();
+                        System.out.print("Sede: ");
+                        String sede = scanner.nextLine();
+                        System.out.println("1.Estudiante ");
+                        System.out.println("2.Maestro ");
+                        System.out.print("Tipo: ");
+                        int sel1 = scanner.nextInt();
+                        String tipo = (sel1 == 1) ? "ESTUDIANTE" : "MAESTRO";
+
+                        RegisterUser(nombre, usuario, password, apellido, mail, sede, tipo);
+                        System.out.println("Usuario creado con éxito!");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 4:
                     System.out.println("Saliendo del menú Maestro.");
                     continuar = false;
                     break;
@@ -250,9 +250,8 @@ public class Driver {
     String fechaFinStr = scanner.nextLine();
     LocalDate fechaFin = LocalDate.parse(fechaFinStr);
     
-    // Aquí asumimos que el usuario que crea el proyecto será el líder si es estudiante,
-    // o el maestro asociado si es maestro. Ajusta según la lógica de tu aplicación.
-    int idLider = (account.getTipo().equals("ESTUDIANTE")) ? account.getIdusuario() : -1; // -1 o algún valor por defecto si no es estudiante
+    
+    int idLider = (account.getTipo().equals("ESTUDIANTE")) ? account.getIdusuario() : -1; 
     int idMaestro = -1;
     if (account.getTipo().equals("ESTUDIANTE")) {
         idLider = account.getIdusuario();
@@ -268,15 +267,14 @@ public class Driver {
                 idMaestro = usuarios.get(maestroIndex).getIdusuario();
             } else {
                 System.out.println("Número de maestro no válido.");
-                return; // Salir del método si no se selecciona un maestro válido
+                return;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return; // Salir del método si hay un error al recuperar los maestros
+            return;
         }
     } else if (account.getTipo().equals("MAESTRO")) {
         idMaestro = account.getIdusuario();
-        // Aquí podrías permitir que el maestro seleccione un líder estudiante si es necesario
     }
     
     try {
