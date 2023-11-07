@@ -1,7 +1,9 @@
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-
 
 public class Driver {
     public static ArrayList<Usuario> usuarios = null;
@@ -14,30 +16,36 @@ public class Driver {
         reloadUsers();
         scanner = new Scanner(System.in);
         boolean loginCicle = true;
-        while(account == null && loginCicle){
+
+        while (loginCicle) {
             System.out.println("1. Login");
             System.out.println("2. Sign in");
-            System.out.println("3. Salir: ");
-            System.out.println("Ingrese la opcion que desea: ");
+            System.out.println("3. Salir");
+            System.out.println("Ingrese la opción que desea: ");
             int opt = scanner.nextInt();
+
             switch (opt) {
                 case 1:
-                    
                     try {
                         scanner.nextLine();
-                        System.out.println("Ingrese su correo electronico");
+                        System.out.println("Ingrese su correo electrónico");
                         String email = scanner.nextLine();
                         System.out.println("Ingrese su contraseña");
-                        String password = scanner.nextLine(); 
+                        String password = scanner.nextLine();
                         account = loginUser(email, password);
-
+                        if (account != null) {
+                            if (account.getTipo().equals("ESTUDIANTE")) {
+                                menuEstudiante();
+                            } else if (account.getTipo().equals("MAESTRO")) {
+                                menuMaestro();
+                            }
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                     break;
                 case 2:
-                    System.out.println("==================== CREACION DE USUARIO =====================");
+                    System.out.println("==================== CREACIÓN DE USUARIO =====================");
                     try {
                         scanner.nextLine();
                         System.out.print("Nombre: ");
@@ -56,70 +64,42 @@ public class Driver {
                         System.out.println("2.Maestro ");
                         System.out.print("Tipo: ");
                         int sel1 = scanner.nextInt();
-                        String tipo = (sel1==1)? "ESTUDIANTE" : "MAESTRO";
-                        
-                        RegisterUser(nombre,usuario, password, apellido, mail, sede, tipo);
-                        System.out.println("Usuario creado con exito!");
+                        String tipo = (sel1 == 1) ? "ESTUDIANTE" : "MAESTRO";
+
+                        RegisterUser(nombre, usuario, password, apellido, mail, sede, tipo);
+                        System.out.println("Usuario creado con éxito!");
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
                     break;
-                case 3: 
+                case 3:
                     System.out.println("Saliendo del programa");
                     loginCicle = false;
                     break;
                 default:
-                    System.out.println("Opcion no valida");
+                    System.out.println("Opción no válida");
                     break;
             }
         }
-        if(account != null){
-            System.out.println("Usuario ingresado con exito!");
-            switch (account.getTipo()) {
-                case "ESTUDIANTE":
-                    try {
-                        menuEstudiante();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    
-                    break;
-                case "MAESTRO":
-                    try {
-                        menuMaestro();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-            
-                default:
-                    System.out.println("Error no identificado");
-                    break;
-            }
-        }
-
-
-
-        
     }
-    public static void menuEstudiante() throws Exception {
+
+    public static void menuEstudiante() {
         boolean continuar = true;
-        
+
         while (continuar) {
             System.out.println("===================== MENU ESTUDIANTE =====================");
-            System.out.println("1. Crear Proyecto");
-            System.out.println("2. Seleccionar Proyecto");
+            System.out.println("1. Proyectos");
+            System.out.println("2. Crear Proyecto");
             System.out.println("3. Salir");
             System.out.print("Elija una opción: ");
             int opt = scanner.nextInt();
-            
+
             switch (opt) {
                 case 1:
-                    // imple
+                    mostrarProyectosEstudiante();
                     break;
                 case 2:
-                    // imple
+                    // Implementa la lógica para crear proyectos aquí.
                     break;
                 case 3:
                     System.out.println("Saliendo del menú estudiante.");
@@ -131,13 +111,96 @@ public class Driver {
             }
         }
     }
-    
-    public static void menuMaestro(){
-        System.out.println("================================= MENU ESTUDIANTE =================================");
-        System.out.println("1. Ver Proyectos");
-        System.out.println("2. Salir");
-        
+
+    public static void mostrarProyectosEstudiante() {
+        System.out.println("Proyectos en los que está inscrito el estudiante:");
+
+        try {
+            String query = "SELECT p.nombre FROM proyectos AS p " +
+                    "INNER JOIN estudiantes_proyectos AS ep ON p.id = ep.id_proyecto " +
+                    "WHERE ep.id_estudiante = ?";
+
+            PreparedStatement preparedStatement = db.getConnection().prepareStatement(query);
+            preparedStatement.setInt(1, account.getIdusuario()); 
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            int proyectoCount = 0;
+            while (resultSet.next()) {
+                String nombreProyecto = resultSet.getString("nombre");
+                System.out.println((proyectoCount + 1) + ". " + nombreProyecto);
+                proyectoCount++;
+            }
+
+            if (proyectoCount == 0) {
+                System.out.println("El estudiante no está inscrito en ningún proyecto.");
+            }
+
+            resultSet.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
+    public static void menuMaestro() {
+        boolean continuar = true;
+    
+        while (continuar) {
+            System.out.println("================================= MENU MAESTRO =================================");
+            System.out.println("1. Ver Proyectos");
+            System.out.println("2. Salir");
+            System.out.print("Elija una opción: ");
+            int opt = scanner.nextInt();
+    
+            switch (opt) {
+                case 1:
+                    mostrarProyectosMaestro();
+                    break;
+                case 2:
+                    System.out.println("Saliendo del menú Maestro.");
+                    continuar = false;
+                    break;
+                default:
+                    System.out.println("Opción no válida");
+                    break;
+            }
+        }
+    }
+    
+    public static void mostrarProyectosMaestro() {
+        System.out.println("Proyectos como Maestro:");
+    
+        try {
+
+            String query = "SELECT nombre FROM proyectos WHERE id_maestro = ?";
+            PreparedStatement preparedStatement = db.getConnection().prepareStatement(query);
+            preparedStatement.setInt(1, account.getIdusuario());
+    
+            ResultSet resultSet = preparedStatement.executeQuery();
+    
+            int proyectoCount = 0;
+            while (resultSet.next()) {
+                String nombreProyecto = resultSet.getString("nombre");
+                System.out.println((proyectoCount + 1) + ". " + nombreProyecto);
+                proyectoCount++;
+            }
+    
+            if (proyectoCount == 0) {
+                System.out.println("El Maestro no tiene proyectos registrados.");
+            }
+    
+            resultSet.close();
+            preparedStatement.close();
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        System.out.println("Presione Enter para volver al menú Maestro.");
+        scanner.nextLine();
+        scanner.nextLine();
+    }    
+
     public static Usuario loginUser(String email, String password) throws Exception {
         for (Usuario usuario : usuarios) {
             if (usuario.getMail().equals(email) && usuario.getPassword().equals(password)) {
@@ -152,9 +215,7 @@ public class Driver {
         reloadUsers();
     }
 
-    public static void reloadUsers() throws Exception{
+    public static void reloadUsers() throws Exception {
         usuarios = db.getAllUsuariosInfo();
     }
-
-    
 }
