@@ -11,10 +11,12 @@ public class Driver {
     public static Usuario account = null;
     public static Scanner scanner;
     public static DatabaseConnector db;
+    public static ArrayList<Proyecto> proyectos = null;
 
     public static void main(String[] args) throws Exception {
         db = new DatabaseConnector();
         reloadUsers();
+        reloadProjects();
         scanner = new Scanner(System.in);
         boolean loginCicle = true;
 
@@ -89,7 +91,7 @@ public class Driver {
 
         while (continuar) {
             System.out.println("===================== MENU ESTUDIANTE =====================");
-            System.out.println("1. Proyectos");
+            System.out.println("1. Ver proyectos");
             System.out.println("2. Crear Proyecto");
             System.out.println("3. Salir");
             System.out.print("Elija una opción: ");
@@ -97,7 +99,12 @@ public class Driver {
 
             switch (opt) {
                 case 1:
-                    //Agregar funcion de ver proyectos creados.
+                    ArrayList<Proyecto> filtrados = filtrarProyectosPorUsuarioLogueado();
+                    int count = 0;
+                    for(Proyecto proyecto: filtrados){
+                        System.out.println((count + 1) + ". " + proyecto.getNombre());
+                        count++;
+                    }
                     break;
                 case 2:
                     createProject();
@@ -156,7 +163,12 @@ public class Driver {
     
             switch (opt) {
                 case 1:
-                    //Agregar funcion de ver proyectos creados.
+                    ArrayList<Proyecto> filtrados = filtrarProyectosPorUsuarioLogueado();
+                    int count = 0;
+                    for(Proyecto proyecto: filtrados){
+                        System.out.println(count + ". " + proyecto.getNombre());
+                        count++;
+                    }
                     break;
                 case 2:
                     createProject();
@@ -273,5 +285,25 @@ public class Driver {
         e.printStackTrace();
     }
 }
+
+    public static void reloadProjects()throws Exception{
+        proyectos = db.getAllProjects();
+    }
+
+    public static ArrayList<Proyecto> filtrarProyectosPorUsuarioLogueado() {
+        ArrayList<Proyecto> proyectosFiltrados = new ArrayList<>();
+
+        for (Proyecto proyecto : proyectos) {
+            boolean esLider = proyecto.getLiderProyecto().getIdusuario() == account.getIdusuario();
+            boolean esMaestroAsociado = proyecto.getMaestroAsociado().getIdusuario() == account.getIdusuario();
+            boolean esMiembro = proyecto.getEstudiantes().stream().anyMatch(estudiante -> estudiante.getIdusuario() == account.getIdusuario());
+
+            if (esLider || esMaestroAsociado || esMiembro) {
+                proyectosFiltrados.add(proyecto);
+            }
+        }
+
+        return proyectosFiltrados;
+    }
 
 }

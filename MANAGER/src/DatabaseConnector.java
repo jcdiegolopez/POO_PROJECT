@@ -89,7 +89,7 @@ public class DatabaseConnector {
                     String descripcion = resultSet.getString("descripcion");
                     LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
                     LocalDate fechaFin = resultSet.getDate("fecha_fin").toLocalDate();
-                    int idLiderProyecto = resultSet.getInt("id_lider_proyecto");
+                    int idLiderProyecto = resultSet.getInt("id_lider");
                     int idMaestroAsociado = resultSet.getInt("id_maestro_asociado");
 
                     // Aquí necesitarás recuperar el objeto Estudiante y Maestro usando sus IDs
@@ -114,6 +114,56 @@ public class DatabaseConnector {
             throw new Exception("Error al obtener la lista de proyectos: " + e.getMessage(), e);
         }
         return projects;
+    }
+
+    public Estudiante getEstudianteById(int idEstudiante) throws SQLException {
+        Estudiante estudiante = null;
+        String query = "SELECT * FROM usuarios WHERE ID_USUARIOS = ? AND TIPO = 'ESTUDIANTE'";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, idEstudiante);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            int id = resultSet.getInt("ID_USUARIOS");
+            String nombre = resultSet.getString("NOMBRE");
+            String user = resultSet.getString("USER");
+            String password = resultSet.getString("PASSWORD");
+            String apellido = resultSet.getString("APELLIDO");
+            String mail = resultSet.getString("MAIL");
+            String sede = resultSet.getString("SEDE");
+            // Asumiendo que la clase Estudiante tiene un constructor adecuado
+            estudiante = new Estudiante(id, nombre, user, password, apellido, mail, sede);
+        }
+        
+        resultSet.close();
+        preparedStatement.close();
+        
+        return estudiante;
+    }
+
+    public Maestro getMaestroById(int idMaestro) throws SQLException {
+        Maestro maestro = null;
+        String query = "SELECT * FROM usuarios WHERE ID_USUARIOS = ? AND TIPO = 'MAESTRO'";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, idMaestro);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            int id = resultSet.getInt("ID_USUARIOS");
+            String nombre = resultSet.getString("NOMBRE");
+            String user = resultSet.getString("USER");
+            String password = resultSet.getString("PASSWORD");
+            String apellido = resultSet.getString("APELLIDO");
+            String mail = resultSet.getString("MAIL");
+            String sede = resultSet.getString("SEDE");
+            // Asumiendo que la clase Maestro tiene un constructor adecuado
+            maestro = new Maestro(id, nombre, user, password, apellido, mail, sede);
+        }
+        
+        resultSet.close();
+        preparedStatement.close();
+        
+        return maestro;
     }
 
     public void registrarUsuario(String nombre, String usuario, String password, String apellido, String mail, String sede, String tipo) throws Exception {
