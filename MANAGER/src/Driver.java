@@ -35,9 +35,9 @@ public class Driver {
                         account = loginUser(email, password);
                         if (account != null) {
                             if (account.getTipo().equals("ESTUDIANTE")) {
-                                menuEstudiante();
+                                studenstMenu();
                             } else if (account.getTipo().equals("MAESTRO")) {
-                                menuMaestro();
+                                profesorsMenu();
                             }
                         }
                     } catch (Exception e) {
@@ -83,7 +83,7 @@ public class Driver {
         }
     }
 
-    public static void menuEstudiante() {
+    public static void studenstMenu() {
         boolean continuar = true;
 
         while (continuar) {
@@ -96,7 +96,7 @@ public class Driver {
 
             switch (opt) {
                 case 1:
-                    mostrarProyectosEstudiante();
+                    showStudentsProjects();
                     break;
                 case 2:
                     // Implementa la lógica para crear proyectos aquí.
@@ -112,7 +112,7 @@ public class Driver {
         }
     }
 
-    public static void mostrarProyectosEstudiante() {
+    public static void showStudentsProjects() {
         System.out.println("Proyectos en los que está inscrito el estudiante:");
 
         try {
@@ -142,7 +142,7 @@ public class Driver {
         }
     }
 
-    public static void menuMaestro() {
+    public static void profesorsMenu() {
         boolean continuar = true;
     
         while (continuar) {
@@ -154,7 +154,7 @@ public class Driver {
     
             switch (opt) {
                 case 1:
-                    mostrarProyectosMaestro();
+                    showProjectsProfesor();
                     break;
                 case 2:
                     System.out.println("Saliendo del menú Maestro.");
@@ -167,7 +167,7 @@ public class Driver {
         }
     }
     
-    public static void mostrarProyectosMaestro() {
+    public static void showProjectsProfesor() {
         System.out.println("Proyectos como Maestro:");
     
         try {
