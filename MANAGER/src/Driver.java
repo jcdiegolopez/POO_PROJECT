@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -99,7 +100,7 @@ public class Driver {
                     showStudentsProjects();
                     break;
                 case 2:
-                    // Implementa la lógica para crear proyectos aquí.
+                    createProject();
                     break;
                 case 3:
                     System.out.println("Saliendo del menú estudiante.");
@@ -148,7 +149,8 @@ public class Driver {
         while (continuar) {
             System.out.println("================================= MENU MAESTRO =================================");
             System.out.println("1. Ver Proyectos");
-            System.out.println("2. Salir");
+            System.out.println("2. Crear Proyectos");
+            System.out.println("3. Salir");
             System.out.print("Elija una opción: ");
             int opt = scanner.nextInt();
     
@@ -157,6 +159,9 @@ public class Driver {
                     showProjectsProfesor();
                     break;
                 case 2:
+                    createProject();
+                    break;
+                case 3:
                     System.out.println("Saliendo del menú Maestro.");
                     continuar = false;
                     break;
@@ -218,4 +223,55 @@ public class Driver {
     public static void reloadUsers() throws Exception {
         usuarios = db.getAllUsuariosInfo();
     }
+
+    public static void createProject() {
+    scanner.nextLine(); // Limpiar el buffer del scanner
+    System.out.println("========== CREACIÓN DE PROYECTO ==========");
+    System.out.print("Nombre del proyecto: ");
+    String nombre = scanner.nextLine();
+    System.out.print("Descripción del proyecto: ");
+    String descripcion = scanner.nextLine();
+    System.out.print("Fecha de inicio (YYYY-MM-DD): ");
+    String fechaInicioStr = scanner.nextLine();
+    LocalDate fechaInicio = LocalDate.parse(fechaInicioStr);
+    System.out.print("Fecha de fin (YYYY-MM-DD): ");
+    String fechaFinStr = scanner.nextLine();
+    LocalDate fechaFin = LocalDate.parse(fechaFinStr);
+    
+    // Aquí asumimos que el usuario que crea el proyecto será el líder si es estudiante,
+    // o el maestro asociado si es maestro. Ajusta según la lógica de tu aplicación.
+    int idLider = (account.getTipo().equals("ESTUDIANTE")) ? account.getIdusuario() : -1; // -1 o algún valor por defecto si no es estudiante
+    int idMaestro = -1;
+    if (account.getTipo().equals("ESTUDIANTE")) {
+        idLider = account.getIdusuario();
+        System.out.println("Seleccione un maestro para el proyecto:");
+        try {
+            for (int i = 0; i < usuarios.size(); i++) {
+                if(usuarios.get(i) instanceof Maestro)
+            {System.out.println((i + 1) + ". " + usuarios.get(i).getNombre());}
+            }
+            System.out.print("Ingrese el número del maestro: ");
+            int maestroIndex = scanner.nextInt() - 1;
+            if (maestroIndex >= 0) {
+                idMaestro = usuarios.get(maestroIndex).getIdusuario();
+            } else {
+                System.out.println("Número de maestro no válido.");
+                return; // Salir del método si no se selecciona un maestro válido
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return; // Salir del método si hay un error al recuperar los maestros
+        }
+    } else if (account.getTipo().equals("MAESTRO")) {
+        idMaestro = account.getIdusuario();
+        // Aquí podrías permitir que el maestro seleccione un líder estudiante si es necesario
+    }
+    
+    try {
+        db.registrarProyecto(nombre, descripcion, fechaInicio, fechaFin, idLider, idMaestro);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 }

@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class DatabaseConnector {
@@ -96,6 +97,32 @@ public class DatabaseConnector {
        } else {
         throw new Exception("No se pudo conectar con la base de datos");
        }
+    }
+
+    public void registrarProyecto(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int idLider, int idMaestroAsociado) throws Exception {
+        openConnection();
+        if (connection != null) {
+            String query = "INSERT INTO proyectos (nombre, descripcion, fecha_inicio, fecha_fin, id_lider, id_maestro_asociado) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, nombre);
+                preparedStatement.setString(2, descripcion);
+                preparedStatement.setDate(3, java.sql.Date.valueOf(fechaInicio));
+                preparedStatement.setDate(4, java.sql.Date.valueOf(fechaFin));
+                preparedStatement.setInt(5, idLider);
+                preparedStatement.setInt(6, idMaestroAsociado);
+
+                int filasAfectadas = preparedStatement.executeUpdate();
+                if (filasAfectadas > 0) {
+                    System.out.println("Proyecto registrado con éxito.");
+                } else {
+                    throw new Exception("No se pudo registrar el proyecto.");
+                }
+            } catch (SQLException e) {
+                throw new Exception("Error al registrar el proyecto: " + e.getMessage());
+            }
+        } else {
+            throw new Exception("No se pudo conectar con la base de datos");
+        }
     }
 
     public void closeConnection() {
