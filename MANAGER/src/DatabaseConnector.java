@@ -75,6 +75,47 @@ public class DatabaseConnector {
         return result;
     }
 
+    public ArrayList<Proyecto> getAllProjects() throws Exception {
+        openConnection();
+        ArrayList<Proyecto> projects = new ArrayList<>();
+        try {
+            if (connection != null) {
+                Statement statement = connection.createStatement();
+                String query = "SELECT * FROM proyectos";
+                ResultSet resultSet = statement.executeQuery(query);
+
+                while (resultSet.next()) {
+                    String nombre = resultSet.getString("nombre");
+                    String descripcion = resultSet.getString("descripcion");
+                    LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
+                    LocalDate fechaFin = resultSet.getDate("fecha_fin").toLocalDate();
+                    int idLiderProyecto = resultSet.getInt("id_lider_proyecto");
+                    int idMaestroAsociado = resultSet.getInt("id_maestro_asociado");
+
+                    // Aquí necesitarás recuperar el objeto Estudiante y Maestro usando sus IDs
+                    Estudiante liderProyecto = getEstudianteById(idLiderProyecto);
+                    Maestro maestroAsociado = getMaestroById(idMaestroAsociado);
+
+                    Proyecto proyecto = new Proyecto(
+                            nombre,
+                            descripcion,
+                            fechaInicio,
+                            fechaFin,
+                            liderProyecto,
+                            maestroAsociado
+                    );
+                    projects.add(proyecto);
+                }
+
+                resultSet.close();
+                statement.close();
+            }
+        } catch (SQLException e) {
+            throw new Exception("Error al obtener la lista de proyectos: " + e.getMessage(), e);
+        }
+        return projects;
+    }
+
     public void registrarUsuario(String nombre, String usuario, String password, String apellido, String mail, String sede, String tipo) throws Exception {
        openConnection();
        if (connection != null) {

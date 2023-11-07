@@ -97,7 +97,7 @@ public class Driver {
 
             switch (opt) {
                 case 1:
-                    showStudentsProjects();
+                    //Agregar funcion de ver proyectos creados.
                     break;
                 case 2:
                     createProject();
@@ -156,7 +156,7 @@ public class Driver {
     
             switch (opt) {
                 case 1:
-                    showProjectsProfesor();
+                    //Agregar funcion de ver proyectos creados.
                     break;
                 case 2:
                     createProject();
