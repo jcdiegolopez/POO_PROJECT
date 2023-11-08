@@ -248,6 +248,40 @@ public class DatabaseConnector {
         }
     }
     
+    public ArrayList<Tarea> getTodasLasTareas() throws SQLException {
+        ArrayList<Tarea> tareas = new ArrayList<>();
+        String query = "SELECT * FROM tareas";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+    
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            String nombre = resultSet.getString("nombre");
+            LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
+            LocalDate fechaFin = resultSet.getObject("fecha_fin") != null ? resultSet.getDate("fecha_fin").toLocalDate() : null;
+            String descripcion = resultSet.getString("descripcion");
+            int idProyecto = resultSet.getInt("id_proyecto");
+            int idUsuarioAsignado = resultSet.getInt("id_usuario_asignado");
+            boolean finalizada = resultSet.getBoolean("finalizada");
+            int calificacion = resultSet.getInt("calificacion");
+    
+            // Aquí determinas si el usuario asignado es un estudiante o un maestro
+            Estudiante estudianteAsignado = getEstudianteById(idUsuarioAsignado);
+            
+            // Asumiendo que la clase Tarea tiene un constructor que acepta un Usuario
+            Tarea tarea = new Tarea(nombre, estudianteAsignado, fechaInicio, fechaFin, descripcion, idProyecto, idUsuarioAsignado, finalizada);
+            tarea.setCalificacion(calificacion);
+            if (finalizada) {
+                tarea.marcarComoFinalizada();
+            }
+            tareas.add(tarea);
+        }
+    
+        resultSet.close();
+        preparedStatement.close();
+    
+        return tareas;
+    }
+    
     
 
     public void closeConnection() {
