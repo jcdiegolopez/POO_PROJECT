@@ -262,7 +262,7 @@ public class Driver {
             switch (option) {
                 case 1:
                     // Mostrar tareas del proyecto
-                    //showTasks(proyecto);
+                    showTasks(proyecto);
                     break;
                 case 2:
                     // Crear tareas para el proyecto
@@ -460,5 +460,23 @@ public class Driver {
 
         return proyectosFiltrados;
     }
+
+    // Método para mostrar las tareas de un proyecto específico para un estudiante
+    public static void showTasks(Proyecto proyecto) {
+    // Suponemos que la clase Proyecto tiene un método getTareas() que devuelve una lista de tareas
+        ArrayList<Tarea> tareasDelProyecto = proyecto.getTareas();
+
+        if (tareasDelProyecto.isEmpty()) {
+            System.out.println("No hay tareas asignadas a este proyecto.");
+        } else {
+            System.out.println("Listado de tareas para el proyecto: " + proyecto.getNombre());
+            for (int i = 0; i < tareasDelProyecto.size(); i++) {
+                Tarea tarea = tareasDelProyecto.get(i);
+            // Suponemos que la clase Tarea tiene métodos getNombre() y getDescripcion() para obtener la información de la tarea
+                System.out.println((i + 1) + ". " + tarea.getNombre() + " - " + tarea.getDescripcion());
+        }
+    }
+}
+
 
 }
