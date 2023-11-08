@@ -83,19 +83,21 @@ public class DatabaseConnector {
                 Statement statement = connection.createStatement();
                 String query = "SELECT * FROM proyectos";
                 ResultSet resultSet = statement.executeQuery(query);
-
+    
                 while (resultSet.next()) {
+                    int idProyecto = resultSet.getInt("id_proyecto");
                     String nombre = resultSet.getString("nombre");
                     String descripcion = resultSet.getString("descripcion");
                     LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
                     LocalDate fechaFin = resultSet.getDate("fecha_fin").toLocalDate();
                     int idLiderProyecto = resultSet.getInt("id_lider");
                     int idMaestroAsociado = resultSet.getInt("id_maestro_asociado");
-
-                    // Aquí necesitarás recuperar el objeto Estudiante y Maestro usando sus IDs
+    
+                    // Recuperar el objeto Estudiante y Maestro usando sus IDs
                     Estudiante liderProyecto = getEstudianteById(idLiderProyecto);
                     Maestro maestroAsociado = getMaestroById(idMaestroAsociado);
-
+    
+                    // Crear el objeto Proyecto
                     Proyecto proyecto = new Proyecto(
                             nombre,
                             descripcion,
@@ -104,17 +106,28 @@ public class DatabaseConnector {
                             liderProyecto,
                             maestroAsociado
                     );
+    
+                    // Cargar las tareas del proyecto
+                    ArrayList<Tarea> tareasDelProyecto = getTareasPorProyecto(idProyecto);
+                    for (Tarea tarea : tareasDelProyecto) {
+                        proyecto.agregarTarea(tarea);
+                    }
+    
+                    // Añadir el proyecto a la lista
                     projects.add(proyecto);
                 }
-
+    
                 resultSet.close();
                 statement.close();
             }
         } catch (SQLException e) {
             throw new Exception("Error al obtener la lista de proyectos: " + e.getMessage(), e);
+        } finally {
+            closeConnection(); // Asegúrate de cerrar la conexión después de usarla
         }
         return projects;
     }
+    
 
     public Estudiante getEstudianteById(int idEstudiante) throws SQLException {
         Estudiante estudiante = null;
@@ -248,37 +261,36 @@ public class DatabaseConnector {
         }
     }
     
-    public ArrayList<Tarea> getTodasLasTareas() throws SQLException {
+    public ArrayList<Tarea> getTareasPorProyecto(int idProyecto) throws SQLException {
         ArrayList<Tarea> tareas = new ArrayList<>();
-        String query = "SELECT * FROM tareas";
+        String query = "SELECT * FROM tareas WHERE id_proyecto = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-    
+        preparedStatement.setInt(1, idProyecto);
+
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
             String nombre = resultSet.getString("nombre");
             LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
             LocalDate fechaFin = resultSet.getObject("fecha_fin") != null ? resultSet.getDate("fecha_fin").toLocalDate() : null;
             String descripcion = resultSet.getString("descripcion");
-            int idProyecto = resultSet.getInt("id_proyecto");
             int idUsuarioAsignado = resultSet.getInt("id_usuario_asignado");
             boolean finalizada = resultSet.getBoolean("finalizada");
             int calificacion = resultSet.getInt("calificacion");
-    
+
             // Aquí determinas si el usuario asignado es un estudiante o un maestro
             Estudiante estudianteAsignado = getEstudianteById(idUsuarioAsignado);
-            
+
+
             // Asumiendo que la clase Tarea tiene un constructor que acepta un Usuario
             Tarea tarea = new Tarea(nombre, estudianteAsignado, fechaInicio, fechaFin, descripcion, idProyecto, idUsuarioAsignado, finalizada);
             tarea.setCalificacion(calificacion);
-            if (finalizada) {
-                tarea.marcarComoFinalizada();
-            }
+            tarea.marcarComoFinalizada();
             tareas.add(tarea);
         }
-    
+
         resultSet.close();
         preparedStatement.close();
-    
+
         return tareas;
     }
     

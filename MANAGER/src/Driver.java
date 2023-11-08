@@ -14,7 +14,6 @@ public class Driver {
     public static Scanner scanner;
     public static DatabaseConnector db;
     public static ArrayList<Proyecto> proyectos = null;
-    private static ArrayList<Tarea> tareas = new ArrayList<Tarea>();
 
     public static void main(String[] args) throws Exception {
         db = new DatabaseConnector();
@@ -477,6 +476,7 @@ public class Driver {
         }
     }
 }
+
 
 
 }
