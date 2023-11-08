@@ -417,8 +417,7 @@ public class Driver {
 
             if (estudianteAsignado != null) {
                 LocalDate fechaInicio = LocalDate.now();
-                Tarea tarea = new Tarea(tareaNombre, estudianteAsignado, fechaInicio, tareaDescripcion, idUsuarioAsignado, account);
-                tareas.add(tarea);
+                db.insertarTarea(tareaNombre, estudianteAsignado, fechaInicio, tareaDescripcion, idProyecto, estudianteId);
                 System.out.println("Tarea asignada con éxito.");
             } else {
                 System.out.println("Estudiante no encontrado con el ID proporcionado.");

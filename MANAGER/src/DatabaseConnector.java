@@ -229,7 +229,7 @@ public class DatabaseConnector {
         }
     }
 
-    public void insertarTarea(Tarea tarea) throws SQLException {
+    public void insertarTarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, String descripcion, int idProyecto, int idUsuarioAsignado) throws SQLException {
         if (connection != null) {
             PreparedStatement stmt = null;
     
@@ -238,14 +238,14 @@ public class DatabaseConnector {
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     
                 stmt = connection.prepareStatement(insertQuery);
-                stmt.setString(1, tarea.getNombre());
-                stmt.setString(2, tarea.getDescripcion());
-                stmt.setDate(3, java.sql.Date.valueOf(tarea.getFechaInicio()));
-                stmt.setDate(4, java.sql.Date.valueOf(tarea.getFechaFin()));
-                stmt.setInt(5, tarea.getCalificacion());
-                stmt.setBoolean(6, tarea.isFinalizada());
-                stmt.setInt(7, tarea.getIdProyecto()); // Reemplaza esto con la forma correcta de obtener el ID del proyecto
-                stmt.setInt(8, tarea.getIdUsuarioAsignado()); // Reemplaza esto con la forma correcta de obtener el ID del usuario asignado
+                stmt.setString(1, nombre);
+                stmt.setString(2, descripcion);
+                stmt.setDate(3, java.sql.Date.valueOf(fechaInicio));
+                stmt.setDate(4, null);
+                stmt.setInt(5, -1);
+                stmt.setBoolean(6, false);
+                stmt.setInt(7, idProyecto); // Reemplaza esto con la forma correcta de obtener el ID del proyecto
+                stmt.setInt(8, idUsuarioAsignado); // Reemplaza esto con la forma correcta de obtener el ID del usuario asignado
     
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {
