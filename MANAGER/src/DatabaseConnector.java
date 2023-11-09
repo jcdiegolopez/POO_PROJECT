@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class DatabaseConnector {
-    private Connection connection;
-
+    private Connection connection = null;    
+    
     public DatabaseConnector() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -17,7 +17,7 @@ public class DatabaseConnector {
             System.out.println(connection);
             System.out.println("Connected to the database.");
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
@@ -31,7 +31,7 @@ public class DatabaseConnector {
                 Class.forName("com.mysql.cj.jdbc.Driver");
                 connection = DriverManager.getConnection("jdbc:mysql://poo@5.161.118.98:33014/proyectopoo?user=poo&password=secret");
             } catch (Exception e) {
-                throw new Exception(e);
+                throw new Exception(e.getMessage());
             }
         }
     }
@@ -199,6 +199,7 @@ public class DatabaseConnector {
             } else {
                 throw new Exception("La inserción no tuvo éxito.");
             }
+            preparedStatement.close();
        } else {
         throw new Exception("No se pudo conectar con la base de datos");
        }
@@ -208,7 +209,7 @@ public class DatabaseConnector {
         openConnection();
         if (connection != null) {
             String query = "INSERT INTO proyectos (nombre, descripcion, fecha_inicio, fecha_fin, id_lider, id_maestro_asociado) VALUES (?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, nombre);
                 preparedStatement.setString(2, descripcion);
                 preparedStatement.setDate(3, java.sql.Date.valueOf(fechaInicio));
@@ -222,23 +223,19 @@ public class DatabaseConnector {
                 } else {
                     throw new Exception("No se pudo registrar el proyecto.");
                 }
-            } catch (SQLException e) {
-                throw new Exception("Error al registrar el proyecto: " + e.getMessage());
-            }
+            preparedStatement.close();
         } else {
             throw new Exception("No se pudo conectar con la base de datos");
         }
     }
 
-    public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws SQLException {
+    public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws Exception {
+        openConnection();
         if (connection != null) {
-            PreparedStatement stmt = null;
-    
-            try {
-                String insertQuery = "INSERT INTO tareas (NOMBRE, DESCRIPCION, FECHA_INICIO, FECHA_FIN, CALIFICACION, FINALIZADA, ID_PROYECTO, ID_USUARIOS) " +
+            String insertQuery = "INSERT INTO tareas (NOMBRE, DESCRIPCION, FECHA_INICIO, FECHA_FIN, CALIFICACION, FINALIZADA, ID_PROYECTO, ID_USUARIOS) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    
-                stmt = connection.prepareStatement(insertQuery);
+                System.out.println(getConnection());
+                PreparedStatement stmt = connection.prepareStatement(insertQuery);
                 stmt.setString(1, nombre);
                 stmt.setString(2, descripcion);
                 stmt.setDate(3, java.sql.Date.valueOf(fechaInicio));
@@ -254,11 +251,9 @@ public class DatabaseConnector {
                 } else {
                     System.out.println("No se pudo insertar la tarea en la base de datos.");
                 }
-            } finally {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            }
+                stmt.close();
+        }else{
+            throw new Exception("No se pudo conectar con la base de datos");
         }
     }
     
