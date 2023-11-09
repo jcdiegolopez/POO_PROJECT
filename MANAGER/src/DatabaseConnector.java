@@ -99,6 +99,7 @@ public class DatabaseConnector {
     
                     // Crear el objeto Proyecto
                     Proyecto proyecto = new Proyecto(
+                            idProyecto,
                             nombre,
                             descripcion,
                             fechaInicio,
@@ -229,7 +230,7 @@ public class DatabaseConnector {
         }
     }
 
-    public void insertarTarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, String descripcion, int idProyecto, int idUsuarioAsignado) throws SQLException {
+    public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws SQLException {
         if (connection != null) {
             PreparedStatement stmt = null;
     
@@ -269,6 +270,7 @@ public class DatabaseConnector {
 
         ResultSet resultSet = preparedStatement.executeQuery();
         while (resultSet.next()) {
+            int idTarea = resultSet.getInt("id_tarea");
             String nombre = resultSet.getString("nombre");
             LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
             LocalDate fechaFin = resultSet.getObject("fecha_fin") != null ? resultSet.getDate("fecha_fin").toLocalDate() : null;
@@ -282,7 +284,7 @@ public class DatabaseConnector {
 
 
             // Asumiendo que la clase Tarea tiene un constructor que acepta un Usuario
-            Tarea tarea = new Tarea(nombre, estudianteAsignado, fechaInicio, fechaFin, descripcion, idProyecto, idUsuarioAsignado, finalizada);
+            Tarea tarea = new Tarea(idTarea,nombre, estudianteAsignado, fechaInicio, fechaFin, descripcion, idProyecto, idUsuarioAsignado, finalizada);
             tarea.setCalificacion(calificacion);
             tarea.marcarComoFinalizada();
             tareas.add(tarea);

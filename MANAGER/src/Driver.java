@@ -1,11 +1,7 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 
 public class Driver {
@@ -59,7 +55,7 @@ public class Driver {
         }
     }
 
-    public static void studenstMenu() {
+    public static void studenstMenu() throws Exception {
         boolean continuar = true;
 
         while (continuar) {
@@ -218,7 +214,7 @@ public class Driver {
         }
     }
     
-    public static void showStudentsProjects() {
+    public static void showStudentsProjects() throws Exception {
         System.out.println("Proyectos en los que está inscrito el estudiante:");
         ArrayList<Proyecto> proyectosFiltrados = filtrarProyectosPorUsuarioLogueado();
     
@@ -243,7 +239,7 @@ public class Driver {
         }
     }
     
-    public static void showProjectMenuStudents(Proyecto proyecto) {
+    public static void showProjectMenuStudents(Proyecto proyecto) throws Exception {
         while (true) {
             System.out.println("\nProyecto: " + proyecto.getNombre());
             System.out.println("Menú del proyecto:");
@@ -260,12 +256,13 @@ public class Driver {
     
             switch (option) {
                 case 1:
+
                     // Mostrar tareas del proyecto
                     showTasks(proyecto);
                     break;
                 case 2:
                     // Crear tareas para el proyecto
-                    createTask();                    
+                    createTask(proyecto.getId());                    
                     break;
                 case 3:
                     // Acceder al chat del proyecto
@@ -401,7 +398,7 @@ public class Driver {
     }
 }
 
-    public static void createTask() {
+    public static void createTask(int idProyecto) throws Exception {
         Scanner scanner = new Scanner(System.in);
         try {
             System.out.println("========== CREACIÓN DE TAREA ==========");
@@ -417,8 +414,9 @@ public class Driver {
 
             if (estudianteAsignado != null) {
                 LocalDate fechaInicio = LocalDate.now();
-                db.insertarTarea(tareaNombre, estudianteAsignado, fechaInicio, tareaDescripcion, idProyecto, estudianteId);
+                db.insertarTarea(tareaNombre, tareaDescripcion ,fechaInicio, idProyecto, estudianteId);
                 System.out.println("Tarea asignada con éxito.");
+                reloadProjects();
             } else {
                 System.out.println("Estudiante no encontrado con el ID proporcionado.");
             }
@@ -459,9 +457,9 @@ public class Driver {
         return proyectosFiltrados;
     }
 
-    // Método para mostrar las tareas de un proyecto específico para un estudiante
-    public static void showTasks(Proyecto proyecto) {
-    // Suponemos que la clase Proyecto tiene un método getTareas() que devuelve una lista de tareas
+
+    public static void showTasks(Proyecto proyecto) throws Exception {
+        
         ArrayList<Tarea> tareasDelProyecto = proyecto.getTareas();
 
         if (tareasDelProyecto.isEmpty()) {

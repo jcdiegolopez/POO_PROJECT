@@ -1,6 +1,7 @@
 import java.time.LocalDate;
 
 public class Tarea {
+    private int idTarea;
     private String nombre;
     private Estudiante estudianteAsignado;
     private LocalDate fechaInicio;
@@ -11,7 +12,8 @@ public class Tarea {
     private int idProyecto; // ID del proyecto al que está asignada la tarea
     private int idUsuarioAsignado; // ID del usuario asignado a la tarea
 
-    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion, int idProyecto, int idUsuarioAsignado, boolean finalizada) {
+    public Tarea(int idTarea, String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, LocalDate fechaFin, String descripcion, int idProyecto, int idUsuarioAsignado, boolean finalizada) {
+        this.idTarea = idTarea;
         this.nombre = nombre;
         this.estudianteAsignado = estudianteAsignado;
         this.fechaInicio = fechaInicio;
@@ -22,11 +24,19 @@ public class Tarea {
         this.idUsuarioAsignado = idUsuarioAsignado;
     }
 
-    public Tarea(String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, String descripcion, int idProyecto, int idUsuarioAsignado) {
-        this(nombre, estudianteAsignado, fechaInicio, null, descripcion, idProyecto, idUsuarioAsignado, false);
+    public Tarea(int idTarea,String nombre, Estudiante estudianteAsignado, LocalDate fechaInicio, String descripcion, int idProyecto, int idUsuarioAsignado) {
+        this(idTarea,nombre, estudianteAsignado, fechaInicio, null, descripcion, idProyecto, idUsuarioAsignado, false);
     }
 
     // Métodos getter y setter para los nuevos campos (idProyecto e idUsuarioAsignado)
+    public int getId() {
+        return idTarea;
+    }
+
+    public void setId ( int id) {
+        this.idTarea = id;
+    }
+
     public int getIdProyecto() {
         return idProyecto;
     }

@@ -3,6 +3,7 @@ import java.time.LocalDate;
 
 
 public class Proyecto {
+    private int idProyecto;
     private String nombre;
     private String descripcion;
     private LocalDate fechaInicio;
@@ -12,7 +13,8 @@ public class Proyecto {
     private ArrayList<Tarea> tareas;
     private ArrayList<Estudiante> estudiantes;
 
-    public Proyecto(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Estudiante liderProyecto, Maestro MaestroAsociado) {
+    public Proyecto(int idProyecto,String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Estudiante liderProyecto, Maestro MaestroAsociado) {
+        this.idProyecto = idProyecto;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.fechaInicio = fechaInicio;
@@ -21,6 +23,15 @@ public class Proyecto {
         this.MaestroAsociado = MaestroAsociado;
         this.tareas = new ArrayList<>();
         this.estudiantes = new ArrayList<>();
+    
+    }
+
+    public int getId() {
+        return idProyecto;
+    }
+
+    public void setId ( int id) {
+        this.idProyecto = id;
     }
 
     public String getNombre() {
