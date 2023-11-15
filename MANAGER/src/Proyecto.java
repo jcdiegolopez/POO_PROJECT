@@ -94,6 +94,10 @@ public class Proyecto {
         tareas.add(tarea);
     }
 
+    public void setTareas(ArrayList<Tarea> tareas) {
+        this.tareas = tareas;
+    }
+
     public void agregarEstudiante(Estudiante estudiante) {
         estudiantes.add(estudiante);
     }

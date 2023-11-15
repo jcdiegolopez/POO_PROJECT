@@ -124,7 +124,7 @@ public class DatabaseConnector {
         } catch (SQLException e) {
             throw new Exception("Error al obtener la lista de proyectos: " + e.getMessage(), e);
         } finally {
-            closeConnection(); // Asegúrate de cerrar la conexión después de usarla
+             // Asegúrate de cerrar la conexión después de usarla
         }
         return projects;
     }
@@ -270,7 +270,7 @@ public class DatabaseConnector {
             LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
             LocalDate fechaFin = resultSet.getObject("fecha_fin") != null ? resultSet.getDate("fecha_fin").toLocalDate() : null;
             String descripcion = resultSet.getString("descripcion");
-            int idUsuarioAsignado = resultSet.getInt("id_usuario_asignado");
+            int idUsuarioAsignado = resultSet.getInt("id_usuarios");
             boolean finalizada = resultSet.getBoolean("finalizada");
             int calificacion = resultSet.getInt("calificacion");
 
