@@ -99,6 +99,7 @@ public class DatabaseConnector {
                     
                     int idLiderProyecto = resultSet.getInt("id_lider");
                     int idMaestroAsociado = resultSet.getInt("id_maestro_asociado");
+                    double calificacion = resultSet.getDouble("calificacion");
     
                     // Recuperar el objeto Estudiante y Maestro usando sus IDs
                     Estudiante liderProyecto = getEstudianteById(idLiderProyecto);
@@ -112,7 +113,8 @@ public class DatabaseConnector {
                             fechaInicio,
                             fechaFin,
                             liderProyecto,
-                            maestroAsociado
+                            maestroAsociado,
+                            calificacion
                     );
     
                     // Cargar las tareas del proyecto
@@ -235,7 +237,20 @@ public class DatabaseConnector {
         } else {
             throw new Exception("No se pudo conectar con la base de datos");
         }
-    }    
+    }
+    
+    public void actualizarCalificacionProyecto(int idProyecto, double calificacion) throws SQLException {
+        String query = "UPDATE proyectos SET CALIFICACION = ? WHERE ID_PROYECTO = ?";
+        
+        try (
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setDouble(1, calificacion);
+            preparedStatement.setInt(2, idProyecto);
+            
+            preparedStatement.executeUpdate();
+        }
+    }
+    
 
     public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws Exception {
         openConnection();
@@ -280,7 +295,7 @@ public class DatabaseConnector {
             String descripcion = resultSet.getString("descripcion");
             int idUsuarioAsignado = resultSet.getInt("id_usuarios");
             boolean finalizada = resultSet.getBoolean("finalizada");
-            int calificacion = resultSet.getInt("calificacion");
+           
 
             // Aquí determinas si el usuario asignado es un estudiante o un maestro
             Estudiante estudianteAsignado = getEstudianteById(idUsuarioAsignado);
@@ -288,7 +303,6 @@ public class DatabaseConnector {
 
             // Asumiendo que la clase Tarea tiene un constructor que acepta un Usuario
             Tarea tarea = new Tarea(idTarea,nombre, estudianteAsignado, fechaInicio, fechaFin, descripcion, idProyecto, idUsuarioAsignado, finalizada);
-            tarea.setCalificacion(calificacion);
             tarea.marcarComoFinalizada();
             tareas.add(tarea);
         }

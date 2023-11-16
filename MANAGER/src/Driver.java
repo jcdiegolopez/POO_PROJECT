@@ -1,4 +1,5 @@
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -292,7 +293,6 @@ public class Driver {
     }
 
     public static void showProjectMenuProfesor(Proyecto proyecto) {
-        Scanner scanner = new Scanner(System.in);
         try {
             while (true) {
                 System.out.println("\nProyecto: " + proyecto.getNombre());
@@ -326,7 +326,7 @@ public class Driver {
                     case 3:
                         try {
                             // Calificar proyecto
-                            //gradeProject(proyecto);
+                            gradeProject(proyecto);
                         } catch (Exception e) {
                             System.err.println("Error al calificar el proyecto: " + e.getMessage());
                         }
@@ -349,9 +349,27 @@ public class Driver {
         } catch (Exception e) {
             System.err.println("Error general en el menú del proyecto: " + e.getMessage());
         } finally {
-            scanner.close();
+            
         }
     }
+
+    public static void gradeProject(Proyecto proyecto) {
+    
+
+    System.out.print("Ingrese la calificación para el proyecto '" + proyecto.getNombre() + "': ");
+    double calificacion = scanner.nextDouble();
+
+    try {
+        db.actualizarCalificacionProyecto(proyecto.getId(), calificacion);
+        proyecto.setCalificacion(calificacion); // Actualizar la calificación en el objeto Proyecto
+        System.out.println("Proyecto calificado exitosamente: " + proyecto.getNombre());
+    } catch (SQLException e) {
+        System.err.println("Error al actualizar la calificación del proyecto: " + e.getMessage());
+    } finally {
+        
+    }
+}
+
 
     public static Usuario loginUser(String email, String password) throws Exception {
         for (Usuario usuario : usuarios) {
@@ -421,7 +439,7 @@ public class Driver {
     }
 
     public static void createTask(int idProyecto) throws Exception {
-        Scanner scanner = new Scanner(System.in);
+        
         try {
             System.out.println("========== CREACIÓN DE TAREA ==========");
             System.out.print("Nombre de la tarea: ");
@@ -453,7 +471,7 @@ public class Driver {
         } catch (NoSuchElementException e) {
             System.err.println("Entrada no válida. Asegúrate de ingresar valores numéricos válidos para el ID del estudiante.");
         } finally {
-            scanner.close();
+            
         }
     }
     
@@ -529,7 +547,7 @@ public class Driver {
         }
 
         System.out.print("Seleccione el número de la tarea que desea cerrar: ");
-        Scanner scanner = new Scanner(System.in);
+        
         int selectedTask = scanner.nextInt();
 
         if (selectedTask >= 1 && selectedTask <= tareasDelProyecto.size()) {
@@ -542,14 +560,14 @@ public class Driver {
         } else {
             System.out.println("Número de tarea inválido.");
         }
-        scanner.close();
+        
     }
 
     public static void closeProjects(DatabaseConnector dbConnector) {
         // Lógica para obtener los proyectos asignados al usuario actualmente logueado
         ArrayList<Proyecto> proyectosAsignados = filtrarProyectosPorUsuarioLogueado();
         
-        Scanner scanner = new Scanner(System.in);
+        
         
         if (proyectosAsignados.isEmpty()) {
             System.out.println("No hay proyectos asignados para cerrar.");

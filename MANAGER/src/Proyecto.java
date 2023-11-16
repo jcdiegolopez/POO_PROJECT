@@ -12,8 +12,9 @@ public class Proyecto {
     private Maestro MaestroAsociado;
     private ArrayList<Tarea> tareas;
     private ArrayList<Estudiante> estudiantes;
+    private double calificacion;
 
-    public Proyecto(int idProyecto,String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Estudiante liderProyecto, Maestro MaestroAsociado) {
+    public Proyecto(int idProyecto,String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Estudiante liderProyecto, Maestro MaestroAsociado, double calificacion) {
         this.idProyecto = idProyecto;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -23,6 +24,7 @@ public class Proyecto {
         this.MaestroAsociado = MaestroAsociado;
         this.tareas = new ArrayList<>();
         this.estudiantes = new ArrayList<>();
+        this.calificacion = 0.0;
     
     }
 
@@ -116,6 +118,14 @@ public class Proyecto {
 
     public Maestro obtenerMaestroAsociado() {
         return MaestroAsociado;
+    }
+
+    public double getCalificacion() {
+        return calificacion;
+    }
+    
+    public void setCalificacion(double calificacion) {
+        this.calificacion = calificacion;
     }
 
 }
