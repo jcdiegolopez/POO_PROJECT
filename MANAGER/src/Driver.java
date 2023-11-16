@@ -398,9 +398,6 @@ public class Driver {
             e.printStackTrace();
         }
     }
-    
-
-
 
     public static void createTask(int idProyecto) throws Exception {
         Scanner scanner = new Scanner(System.in);
@@ -410,15 +407,24 @@ public class Driver {
             String tareaNombre = scanner.nextLine();
             System.out.print("Descripción de la tarea: ");
             String tareaDescripcion = scanner.nextLine();
-
+    
+            // Mostrar las IDs de los estudiantes disponibles
+            ArrayList<Usuario> usuarios = db.getAllUsuariosInfo();
+            System.out.println("IDs de los estudiantes disponibles:");
+            for (Usuario usuario : usuarios) {
+                if (usuario instanceof Estudiante) {
+                    System.out.println("ID: " + usuario.getIdusuario() + " - Nombre: " + usuario.getNombre());
+                }
+            }
+    
             System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
             int estudianteId = scanner.nextInt();
-
+    
             Estudiante estudianteAsignado = findEstudianteById(estudianteId);
-
+    
             if (estudianteAsignado != null) {
                 LocalDate fechaInicio = LocalDate.now();
-                db.insertarTarea(tareaNombre, tareaDescripcion ,fechaInicio, idProyecto, estudianteId);
+                db.insertarTarea(tareaNombre, tareaDescripcion, fechaInicio, idProyecto, estudianteId);
                 System.out.println("Tarea asignada con éxito.");
                 reloadProjects();
             } else {
@@ -430,6 +436,7 @@ public class Driver {
             scanner.close();
         }
     }
+    
 
     public static void reloadProjects()throws Exception{
         proyectos = db.getAllProjects();

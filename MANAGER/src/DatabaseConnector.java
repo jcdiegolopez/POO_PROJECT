@@ -89,7 +89,14 @@ public class DatabaseConnector {
                     String nombre = resultSet.getString("nombre");
                     String descripcion = resultSet.getString("descripcion");
                     LocalDate fechaInicio = resultSet.getDate("fecha_inicio").toLocalDate();
-                    LocalDate fechaFin = resultSet.getDate("fecha_fin").toLocalDate();
+                    
+                    // Manejar fecha_fin que podría ser null en la base de datos
+                    LocalDate fechaFin = null;
+                    java.sql.Date fechaFinSQL = resultSet.getDate("fecha_fin");
+                    if (fechaFinSQL != null) {
+                        fechaFin = fechaFinSQL.toLocalDate();
+                    }
+                    
                     int idLiderProyecto = resultSet.getInt("id_lider");
                     int idMaestroAsociado = resultSet.getInt("id_maestro_asociado");
     
@@ -124,7 +131,7 @@ public class DatabaseConnector {
         } catch (SQLException e) {
             throw new Exception("Error al obtener la lista de proyectos: " + e.getMessage(), e);
         } finally {
-             // Asegúrate de cerrar la conexión después de usarla
+            // Asegúrate de cerrar la conexión después de usarla
         }
         return projects;
     }
@@ -227,8 +234,7 @@ public class DatabaseConnector {
         } else {
             throw new Exception("No se pudo conectar con la base de datos");
         }
-    }
-    
+    }    
 
     public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws Exception {
         openConnection();
