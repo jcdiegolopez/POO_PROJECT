@@ -351,52 +351,56 @@ public class Driver {
     }
 
     public static void createProject() {
-    scanner.nextLine();
-    System.out.println("========== CREACIÓN DE PROYECTO ==========");
-    System.out.print("Nombre del proyecto: ");
-    String nombre = scanner.nextLine();
-    System.out.print("Descripción del proyecto: ");
-    String descripcion = scanner.nextLine();
-    System.out.print("Fecha de inicio (YYYY-MM-DD): ");
-    String fechaInicioStr = scanner.nextLine();
-    LocalDate fechaInicio = LocalDate.parse(fechaInicioStr);
-    System.out.print("Fecha de fin (YYYY-MM-DD): ");
-    String fechaFinStr = scanner.nextLine();
-    LocalDate fechaFin = LocalDate.parse(fechaFinStr);
+        scanner.nextLine();
+        System.out.println("========== CREACIÓN DE PROYECTO ==========");
+        System.out.print("Nombre del proyecto: ");
+        String nombre = scanner.nextLine();
+        System.out.print("Descripción del proyecto: ");
+        String descripcion = scanner.nextLine();
     
+        LocalDate fechaInicio = LocalDate.now();
     
-    int idLider = (account.getTipo().equals("ESTUDIANTE")) ? account.getIdusuario() : -1; 
-    int idMaestro = -1;
-    if (account.getTipo().equals("ESTUDIANTE")) {
-        idLider = account.getIdusuario();
-        System.out.println("Seleccione un maestro para el proyecto:");
-        try {
-            for (int i = 0; i < usuarios.size(); i++) {
-                if(usuarios.get(i) instanceof Maestro)
-            {System.out.println((i + 1) + ". " + usuarios.get(i).getNombre());}
-            }
-            System.out.print("Ingrese el número del maestro: ");
-            int maestroIndex = scanner.nextInt() - 1;
-            if (maestroIndex >= 0) {
-                idMaestro = usuarios.get(maestroIndex).getIdusuario();
-            } else {
-                System.out.println("Número de maestro no válido.");
+        LocalDate fechaFin = null;
+    
+        int idLider = (account.getTipo().equals("ESTUDIANTE")) ? account.getIdusuario() : -1;
+        int idMaestro = -1;
+    
+        if (account.getTipo().equals("ESTUDIANTE")) {
+            idLider = account.getIdusuario();
+            System.out.println("Seleccione un maestro para el proyecto:");
+    
+            try {
+                for (int i = 0; i < usuarios.size(); i++) {
+                    if (usuarios.get(i) instanceof Maestro) {
+                        System.out.println((i + 1) + ". " + usuarios.get(i).getNombre());
+                    }
+                }
+                System.out.print("Ingrese el número del maestro: ");
+                int maestroIndex = scanner.nextInt() - 1;
+    
+                if (maestroIndex >= 0) {
+                    idMaestro = usuarios.get(maestroIndex).getIdusuario();
+                } else {
+                    System.out.println("Número de maestro no válido.");
+                    return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
                 return;
             }
+        } else if (account.getTipo().equals("MAESTRO")) {
+            idMaestro = account.getIdusuario();
+        }
+    
+        try {
+            db.registrarProyecto(nombre, descripcion, fechaInicio, fechaFin, idLider, idMaestro);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
-    } else if (account.getTipo().equals("MAESTRO")) {
-        idMaestro = account.getIdusuario();
     }
     
-    try {
-        db.registrarProyecto(nombre, descripcion, fechaInicio, fechaFin, idLider, idMaestro);
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
+
+
 
     public static void createTask(int idProyecto) throws Exception {
         Scanner scanner = new Scanner(System.in);

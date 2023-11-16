@@ -209,25 +209,26 @@ public class DatabaseConnector {
         openConnection();
         if (connection != null) {
             String query = "INSERT INTO proyectos (nombre, descripcion, fecha_inicio, fecha_fin, id_lider, id_maestro_asociado) VALUES (?, ?, ?, ?, ?, ?)";
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, nombre);
-                preparedStatement.setString(2, descripcion);
-                preparedStatement.setDate(3, java.sql.Date.valueOf(fechaInicio));
-                preparedStatement.setDate(4, java.sql.Date.valueOf(fechaFin));
-                preparedStatement.setInt(5, idLider);
-                preparedStatement.setInt(6, idMaestroAsociado);
-
-                int filasAfectadas = preparedStatement.executeUpdate();
-                if (filasAfectadas > 0) {
-                    System.out.println("Proyecto registrado con éxito.");
-                } else {
-                    throw new Exception("No se pudo registrar el proyecto.");
-                }
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, descripcion);
+            preparedStatement.setDate(3, java.sql.Date.valueOf(fechaInicio));
+            preparedStatement.setDate(4, (fechaFin != null) ? java.sql.Date.valueOf(fechaFin) : null);
+            preparedStatement.setInt(5, idLider);
+            preparedStatement.setInt(6, idMaestroAsociado);
+    
+            int filasAfectadas = preparedStatement.executeUpdate();
+            if (filasAfectadas > 0) {
+                System.out.println("Proyecto registrado con éxito.");
+            } else {
+                throw new Exception("No se pudo registrar el proyecto.");
+            }
             preparedStatement.close();
         } else {
             throw new Exception("No se pudo conectar con la base de datos");
         }
     }
+    
 
     public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws Exception {
         openConnection();
