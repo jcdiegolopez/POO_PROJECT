@@ -55,7 +55,7 @@ public class Driver {
             }
         }
     }
-
+    
     public static void studenstMenu() throws Exception {
         boolean continuar = true;
 
@@ -63,7 +63,8 @@ public class Driver {
             System.out.println("===================== MENU ESTUDIANTE =====================");
             System.out.println("1. Ver proyectos");
             System.out.println("2. Crear Proyecto");
-            System.out.println("3. Salir");
+            System.out.println("3. Cerrar proyecto");
+            System.out.println("4. Salir");
             System.out.print("Elija una opción: ");
             int opt = scanner.nextInt();
 
@@ -98,6 +99,9 @@ public class Driver {
                     createProject();
                     break;
                 case 3:
+                    closeProjects(db);                    
+                    break;
+                case 4:
                     System.out.println("Saliendo del menú estudiante.");
                     continuar = false;
                     break;
@@ -108,15 +112,18 @@ public class Driver {
         }
     }
 
-    public static void profesorsMenu() {
+
+
+public static void profesorsMenu() {
         boolean continuar = true;
     
         while (continuar) {
             System.out.println("================================= MENU MAESTRO =================================");
             System.out.println("1. Ver Proyectos");
             System.out.println("2. Crear Proyectos");
-            System.out.println("3. Crear nuevo usuario");
-            System.out.println("4. Salir");
+            System.out.println("3. Cerrar proyecto");
+            System.out.println("4. Crear nuevo usuario");
+            System.out.println("5. Salir");
             System.out.print("Elija una opción: ");
             int opt = scanner.nextInt();
     
@@ -152,6 +159,9 @@ public class Driver {
                     createProject();
                     break;
                 case 3:
+                    closeProjects(db);                    
+                    break;
+                case 4:
                     System.out.println("==================== CREACIÓN DE USUARIO =====================");
                     try {
                         scanner.nextLine();
@@ -179,7 +189,7 @@ public class Driver {
                         e.printStackTrace();
                     }
                     break;
-                case 4:
+                case 5:
                     System.out.println("Saliendo del menú Maestro.");
                     continuar = false;
                     break;
@@ -246,11 +256,10 @@ public class Driver {
             System.out.println("Menú del proyecto:");
             System.out.println("1. Ver tareas");
             System.out.println("2. Crear tareas");
-            System.out.println("3. Chat del proyecto");
-            System.out.println("4. Calificar tareas");
+            System.out.println("3. Agregar miembros al proyecto");
+            System.out.println("4. Chat del proyecto");
             System.out.println("5. Cerrar tarea");
-            System.out.println("6. Cerrar proyecto");
-            System.out.println("7. Regresar al menú anterior");
+            System.out.println("6. Regresar al menú anterior");
     
             System.out.print("Seleccione una opción: ");
             int option = scanner.nextInt();
@@ -258,32 +267,23 @@ public class Driver {
     
             switch (option) {
                 case 1:
-
-                    // Mostrar tareas del proyecto
                     showTasks(proyecto);
                     break;
                 case 2:
-                    // Crear tareas para el proyecto
                     createTask(proyecto.getId());                    
                     break;
                 case 3:
+                    // Agregar miembro
+                    //newMember(proyecto);
+                    break;
+                case 4:
                     // Acceder al chat del proyecto
                     //accessProjectChat(proyecto);
                     break;
-                case 4:
-                    // Calificar tareas del proyecto
-                    //gradeTasks(proyecto);
-                    break;
                 case 5:
-                    // Cerrar la tarea (implementa la lógica necesaria)
                     closeTasks(proyecto);
                     break;
                 case 6:
-                    // Cerrar el proyecto (implementa la lógica necesaria)
-                    closeProjects(db);                    
-                    break;
-                case 7:
-                    // Regresar al menú anterior
                     return;
                 default:
                     System.out.println("Selección no válida.");
@@ -291,6 +291,35 @@ public class Driver {
             }
         }
     }
+
+    public static void showClosedProjectMenuStudents(Proyecto proyecto) throws Exception {
+        while (true) {
+            System.out.println("\nProyecto: " + proyecto.getNombre());
+            System.out.println("Menú del proyecto:");
+            System.out.println("1. Ver tareas");
+            System.out.println("2. Chat del proyecto");
+            System.out.println("3. Regresar al menú anterior");
+            System.out.print("Seleccione una opción: ");
+            int option = scanner.nextInt();
+            scanner.nextLine();
+    
+            switch (option) {
+                case 1:
+                    showTasks(proyecto);
+                    break;
+                case 2:
+                    // Acceder al chat del proyecto
+                    //accessProjectChat(proyecto);
+                    break;
+                case 3:
+                    return;
+                default:
+                    System.out.println("Selección no válida.");
+                    break;
+            }
+        }
+    }
+
 
     public static void showProjectMenuProfesor(Proyecto proyecto) {
         try {
