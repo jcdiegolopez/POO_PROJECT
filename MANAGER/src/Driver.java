@@ -279,7 +279,7 @@ public class Driver {
                     break;
                 case 6:
                     // Cerrar el proyecto (implementa la lógica necesaria)
-                    //closeProject(proyecto);
+                    closeProjects(db);                    
                     break;
                 case 7:
                     // Regresar al menú anterior
@@ -429,7 +429,6 @@ public class Driver {
             System.out.print("Descripción de la tarea: ");
             String tareaDescripcion = scanner.nextLine();
     
-            // Mostrar las IDs de los estudiantes disponibles
             ArrayList<Usuario> usuarios = db.getAllUsuariosInfo();
             System.out.println("IDs de los estudiantes disponibles:");
             for (Usuario usuario : usuarios) {
@@ -491,50 +490,109 @@ public class Driver {
 
 
     public static void showTasks(Proyecto proyecto) throws Exception {
-        
         ArrayList<Tarea> tareasDelProyecto = proyecto.getTareas();
-
+    
         if (tareasDelProyecto.isEmpty()) {
             System.out.println("No hay tareas asignadas a este proyecto.");
         } else {
             System.out.println("Listado de tareas para el proyecto: " + proyecto.getNombre());
-            for (int i = 0; i < tareasDelProyecto.size(); i++) {
-                Tarea tarea = tareasDelProyecto.get(i);
-                System.out.println((i + 1) + ". " + tarea.getNombre() + " - " + tarea.getDescripcion());
+    
+            System.out.println("Tareas completadas:");
+            for (Tarea tarea : tareasDelProyecto) {
+                if (tarea.getFechaFin() != null) {
+                    System.out.println("- " + tarea.getNombre() + " - " + tarea.getDescripcion());
+                }
+            }
+    
+            System.out.println("Tareas sin completar:");
+            for (Tarea tarea : tareasDelProyecto) {
+                if (tarea.getFechaFin() == null) {
+                    System.out.println("- " + tarea.getNombre() + " - " + tarea.getDescripcion());
+                }
+            }
         }
     }
-}
+    
 
-public static void closeTasks(Proyecto proyecto) throws Exception {
-    ArrayList<Tarea> tareasDelProyecto = proyecto.getTareas();
+    public static void closeTasks(Proyecto proyecto) throws Exception {
+        ArrayList<Tarea> tareasDelProyecto = proyecto.getTareas();
 
-    if (tareasDelProyecto.isEmpty()) {
-        System.out.println("No hay tareas asignadas a este proyecto.");
-        return;
+        if (tareasDelProyecto.isEmpty()) {
+            System.out.println("No hay tareas asignadas a este proyecto.");
+            return;
+        }
+
+        System.out.println("Lista de tareas en el proyecto " + proyecto.getNombre() + ":");
+        for (int i = 0; i < tareasDelProyecto.size(); i++) {
+            Tarea tarea = tareasDelProyecto.get(i);
+            System.out.println((i + 1) + ". " + tarea.getNombre() + " - " + tarea.getDescripcion());
+        }
+
+        System.out.print("Seleccione el número de la tarea que desea cerrar: ");
+        Scanner scanner = new Scanner(System.in);
+        int selectedTask = scanner.nextInt();
+
+        if (selectedTask >= 1 && selectedTask <= tareasDelProyecto.size()) {
+            Tarea tareaSeleccionada = tareasDelProyecto.get(selectedTask - 1);
+            LocalDate fechaCierre = LocalDate.now();
+
+            db.actualizarFechaCierreTarea(tareaSeleccionada.getId(), fechaCierre);
+
+            System.out.println("Tarea cerrada exitosamente: " + tareaSeleccionada.getNombre());
+        } else {
+            System.out.println("Número de tarea inválido.");
+        }
+        scanner.close();
     }
 
-    System.out.println("Lista de tareas en el proyecto " + proyecto.getNombre() + ":");
-    for (int i = 0; i < tareasDelProyecto.size(); i++) {
-        Tarea tarea = tareasDelProyecto.get(i);
-        System.out.println((i + 1) + ". " + tarea.getNombre() + " - " + tarea.getDescripcion());
+    public static void closeProjects(DatabaseConnector dbConnector) {
+        // Lógica para obtener los proyectos asignados al usuario actualmente logueado
+        ArrayList<Proyecto> proyectosAsignados = filtrarProyectosPorUsuarioLogueado();
+        
+        Scanner scanner = new Scanner(System.in);
+        
+        if (proyectosAsignados.isEmpty()) {
+            System.out.println("No hay proyectos asignados para cerrar.");
+        } else {
+            System.out.println("Lista de proyectos asignados:");
+            for (int i = 0; i < proyectosAsignados.size(); i++) {
+                System.out.println((i + 1) + ". " + proyectosAsignados.get(i).getNombre());
+            }
+    
+            System.out.print("Seleccione el número del proyecto que desea cerrar (0 para cerrar todos): ");
+            int selectedProjectIndex = scanner.nextInt();
+    
+            if (selectedProjectIndex >= 0 && selectedProjectIndex <= proyectosAsignados.size()) {
+                if (selectedProjectIndex == 0) {
+                    // Cerrar todos los proyectos asignados
+                    for (Proyecto proyecto : proyectosAsignados) {
+                        try {
+                            dbConnector.cerrarProyecto(proyecto.getId());
+                            System.out.println("Proyecto '" + proyecto.getNombre() + "' cerrado con éxito.");
+                        } catch (Exception e) {
+                            System.out.println("Error al cerrar el proyecto '" + proyecto.getNombre() + "': " + e.getMessage());
+                        }
+                    }
+                } else {
+                    // Cerrar proyecto seleccionado
+                    Proyecto proyectoSeleccionado = proyectosAsignados.get(selectedProjectIndex - 1);
+                    try {
+                        dbConnector.cerrarProyecto(proyectoSeleccionado.getId());
+                        System.out.println("Proyecto '" + proyectoSeleccionado.getNombre() + "' cerrado con éxito.");
+                    } catch (Exception e) {
+                        System.out.println("Error al cerrar el proyecto: " + e.getMessage());
+                    }
+                }
+            } else {
+                System.out.println("Número de proyecto inválido.");
+            }
+        }
+    
+        scanner.close();
     }
-
-    System.out.print("Seleccione el número de la tarea que desea cerrar: ");
-    Scanner scanner = new Scanner(System.in);
-    int selectedTask = scanner.nextInt();
-
-    if (selectedTask >= 1 && selectedTask <= tareasDelProyecto.size()) {
-        Tarea tareaSeleccionada = tareasDelProyecto.get(selectedTask - 1);
-        LocalDate fechaCierre = LocalDate.now();
-
-        db.actualizarFechaCierreTarea(tareaSeleccionada.getId(), fechaCierre); // Implementa esta función en tu DatabaseConnector
-
-        System.out.println("Tarea cerrada exitosamente: " + tareaSeleccionada.getNombre());
-    } else {
-        System.out.println("Número de tarea inválido.");
-    }
-    scanner.close();
-}
-
+    
+    
+    
+    
 
 }

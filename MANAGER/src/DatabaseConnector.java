@@ -324,6 +324,54 @@ public class DatabaseConnector {
         }
     }
 
+    public void cerrarProyecto(int idProyecto) throws Exception {
+        try {
+            openConnection();
+            if (connection != null) {
+                // Verificar si el proyecto está abierto
+                String checkOpenQuery = "SELECT fecha_fin FROM proyectos WHERE id_proyecto = ?";
+                PreparedStatement checkOpenStatement = connection.prepareStatement(checkOpenQuery);
+                checkOpenStatement.setInt(1, idProyecto);
+                ResultSet resultSet = checkOpenStatement.executeQuery();
+    
+                LocalDate fechaFin = null;
+                if (resultSet.next()) {
+                    fechaFin = resultSet.getDate("fecha_fin") != null ?
+                                resultSet.getDate("fecha_fin").toLocalDate() : null;
+                }
+    
+                resultSet.close();
+                checkOpenStatement.close();
+    
+                if (fechaFin != null) {
+                    System.out.println("El proyecto ya está cerrado.");
+                    return;
+                }
+    
+                // Actualizar la fecha de finalización del proyecto
+                String updateQuery = "UPDATE proyectos SET fecha_fin = ? WHERE id_proyecto = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+                preparedStatement.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
+                preparedStatement.setInt(2, idProyecto);
+    
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Fecha de cierre del proyecto actualizada con éxito en la base de datos.");
+                } else {
+                    System.out.println("No se pudo actualizar la fecha de cierre del proyecto en la base de datos.");
+                }
+    
+                preparedStatement.close();
+            } else {
+                throw new SQLException("No se pudo conectar con la base de datos.");
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error al cerrar el proyecto: " + e.getMessage());
+        }
+    }
+    
+    
+
     public void closeConnection() {
         try {
             if (connection != null) {
