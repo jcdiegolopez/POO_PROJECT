@@ -298,7 +298,31 @@ public class DatabaseConnector {
         return tareas;
     }
     
+    public void actualizarFechaCierreTarea(int tareaId, LocalDate fechaCierre) throws SQLException, Exception {
+        try {
+            openConnection();
+            if (connection != null) {
+                String updateQuery = "UPDATE tareas SET FECHA_FIN = ? WHERE id_tarea = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+                preparedStatement.setDate(1, java.sql.Date.valueOf(fechaCierre));
+                preparedStatement.setInt(2, tareaId);
     
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Fecha de cierre de tarea actualizada con éxito en la base de datos.");
+                } else {
+                    System.out.println("No se pudo actualizar la fecha de cierre de la tarea en la base de datos.");
+                }
+                preparedStatement.close();
+            } else {
+                throw new SQLException("No se pudo conectar con la base de datos.");
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Error al actualizar la fecha de cierre de la tarea: " + e.getMessage());
+        } catch (Exception ex) {
+            throw new Exception("Error inesperado: " + ex.getMessage());
+        }
+    }
 
     public void closeConnection() {
         try {

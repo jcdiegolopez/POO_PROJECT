@@ -247,8 +247,9 @@ public class Driver {
             System.out.println("2. Crear tareas");
             System.out.println("3. Chat del proyecto");
             System.out.println("4. Calificar tareas");
-            System.out.println("5. Cerrar proyecto");
-            System.out.println("6. Regresar al menú anterior");
+            System.out.println("5. Cerrar tarea");
+            System.out.println("6. Cerrar proyecto");
+            System.out.println("7. Regresar al menú anterior");
     
             System.out.print("Seleccione una opción: ");
             int option = scanner.nextInt();
@@ -274,7 +275,7 @@ public class Driver {
                     break;
                 case 5:
                     // Cerrar la tarea (implementa la lógica necesaria)
-                    //closeTask(proyecto);
+                    closeTasks(proyecto);
                     break;
                 case 6:
                     // Cerrar el proyecto (implementa la lógica necesaria)
@@ -291,46 +292,66 @@ public class Driver {
     }
 
     public static void showProjectMenuProfesor(Proyecto proyecto) {
-        while (true) {
-            System.out.println("\nProyecto: " + proyecto.getNombre());
-            System.out.println("Menú del proyecto:");
-            System.out.println("1. Ver tareas");
-            System.out.println("2. Chat del proyecto");
-            System.out.println("3. Calificar proyecto");
-            System.out.println("4. Cerrar proyecto");
-            System.out.println("5. Regresar al menú anterior");
+        Scanner scanner = new Scanner(System.in);
+        try {
+            while (true) {
+                System.out.println("\nProyecto: " + proyecto.getNombre());
+                System.out.println("Menú del proyecto:");
+                System.out.println("1. Ver tareas");
+                System.out.println("2. Chat del proyecto");
+                System.out.println("3. Calificar proyecto");
+                System.out.println("4. Cerrar proyecto");
+                System.out.println("5. Regresar al menú anterior");
     
-            System.out.print("Seleccione una opción: ");
-            int option = scanner.nextInt();
-            scanner.nextLine();
+                System.out.print("Seleccione una opción: ");
+                int option = scanner.nextInt();
+                scanner.nextLine();
     
-            switch (option) {
-                case 1:
-                    // Mostrar tareas del proyecto
-                    //showTasks(proyecto);
-                    break;
-                case 2:
-                    // Acceder al chat del proyecto
-                    //accessProjectChat(proyecto);
-                    break;
-                case 3:
-                    // Calificar tareas del proyecto
-                    //gradeProject(proyecto);
-                    break;
-                case 4:
-                    // Cerrar el proyecto (implementa la lógica necesaria)
-                    //closeProject(proyecto);
-                    break;
-                case 5:
-                    // Regresar al menú anterior
-                    return;
-                default:
-                    System.out.println("Selección no válida.");
-                    break;
+                switch (option) {
+                    case 1:
+                        try {
+                            showTasks(proyecto);
+                        } catch (Exception e) {
+                            System.err.println("Error al mostrar las tareas: " + e.getMessage());
+                        }
+                        break;
+                    case 2:
+                        try {
+                            // Acceder al chat del proyecto
+                            //accessProjectChat(proyecto);
+                        } catch (Exception e) {
+                            System.err.println("Error al acceder al chat del proyecto: " + e.getMessage());
+                        }
+                        break;
+                    case 3:
+                        try {
+                            // Calificar tareas del proyecto
+                            //gradeProject(proyecto);
+                        } catch (Exception e) {
+                            System.err.println("Error al calificar el proyecto: " + e.getMessage());
+                        }
+                        break;
+                    case 4:
+                        try {
+                            // Cerrar el proyecto
+                            //closeProject(proyecto);
+                        } catch (Exception e) {
+                            System.err.println("Error al cerrar el proyecto: " + e.getMessage());
+                        }
+                        break;
+                    case 5:
+                        return;
+                    default:
+                        System.out.println("Selección no válida.");
+                        break;
+                }
             }
+        } catch (Exception e) {
+            System.err.println("Error general en el menú del proyecto: " + e.getMessage());
+        } finally {
+            scanner.close();
         }
     }
-    
 
     public static Usuario loginUser(String email, String password) throws Exception {
         for (Usuario usuario : usuarios) {
@@ -479,12 +500,41 @@ public class Driver {
             System.out.println("Listado de tareas para el proyecto: " + proyecto.getNombre());
             for (int i = 0; i < tareasDelProyecto.size(); i++) {
                 Tarea tarea = tareasDelProyecto.get(i);
-            // Suponemos que la clase Tarea tiene métodos getNombre() y getDescripcion() para obtener la información de la tarea
                 System.out.println((i + 1) + ". " + tarea.getNombre() + " - " + tarea.getDescripcion());
         }
     }
 }
 
+public static void closeTasks(Proyecto proyecto) throws Exception {
+    ArrayList<Tarea> tareasDelProyecto = proyecto.getTareas();
+
+    if (tareasDelProyecto.isEmpty()) {
+        System.out.println("No hay tareas asignadas a este proyecto.");
+        return;
+    }
+
+    System.out.println("Lista de tareas en el proyecto " + proyecto.getNombre() + ":");
+    for (int i = 0; i < tareasDelProyecto.size(); i++) {
+        Tarea tarea = tareasDelProyecto.get(i);
+        System.out.println((i + 1) + ". " + tarea.getNombre() + " - " + tarea.getDescripcion());
+    }
+
+    System.out.print("Seleccione el número de la tarea que desea cerrar: ");
+    Scanner scanner = new Scanner(System.in);
+    int selectedTask = scanner.nextInt();
+
+    if (selectedTask >= 1 && selectedTask <= tareasDelProyecto.size()) {
+        Tarea tareaSeleccionada = tareasDelProyecto.get(selectedTask - 1);
+        LocalDate fechaCierre = LocalDate.now();
+
+        db.actualizarFechaCierreTarea(tareaSeleccionada.getId(), fechaCierre); // Implementa esta función en tu DatabaseConnector
+
+        System.out.println("Tarea cerrada exitosamente: " + tareaSeleccionada.getNombre());
+    } else {
+        System.out.println("Número de tarea inválido.");
+    }
+    scanner.close();
+}
 
 
 }
