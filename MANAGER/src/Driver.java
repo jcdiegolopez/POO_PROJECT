@@ -325,7 +325,6 @@ public class Driver {
                         break;
                     case 3:
                         try {
-                            // Calificar proyecto
                             gradeProject(proyecto);
                         } catch (Exception e) {
                             System.err.println("Error al calificar el proyecto: " + e.getMessage());
@@ -333,8 +332,7 @@ public class Driver {
                         break;
                     case 4:
                         try {
-                            // Cerrar el proyecto
-                            //closeProject(proyecto);
+                            closeProjects(db);
                         } catch (Exception e) {
                             System.err.println("Error al cerrar el proyecto: " + e.getMessage());
                         }
@@ -367,9 +365,8 @@ public class Driver {
         System.err.println("Error al actualizar la calificación del proyecto: " + e.getMessage());
     } finally {
         
+        }
     }
-}
-
 
     public static Usuario loginUser(String email, String password) throws Exception {
         for (Usuario usuario : usuarios) {
@@ -608,9 +605,4 @@ public class Driver {
     
         scanner.close();
     }
-    
-    
-    
-    
-
 }
