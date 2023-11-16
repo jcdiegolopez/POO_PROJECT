@@ -223,6 +223,7 @@ public class DatabaseConnector {
             preparedStatement.setDate(4, (fechaFin != null) ? java.sql.Date.valueOf(fechaFin) : null);
             preparedStatement.setInt(5, idLider);
             preparedStatement.setInt(6, idMaestroAsociado);
+            preparedStatement.setDouble(7, 0.0);
     
             int filasAfectadas = preparedStatement.executeUpdate();
             if (filasAfectadas > 0) {

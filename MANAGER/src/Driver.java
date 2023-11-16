@@ -325,7 +325,7 @@ public class Driver {
                         break;
                     case 3:
                         try {
-                            // Calificar tareas del proyecto
+                            // Calificar proyecto
                             //gradeProject(proyecto);
                         } catch (Exception e) {
                             System.err.println("Error al calificar el proyecto: " + e.getMessage());
