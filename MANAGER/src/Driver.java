@@ -274,7 +274,7 @@ public static void profesorsMenu() {
                     break;
                 case 3:
                     // Agregar miembro
-                    //newMember(proyecto);
+                    newMember(proyecto);
                     break;
                 case 4:
                     // Acceder al chat del proyecto
@@ -464,6 +464,24 @@ public static void profesorsMenu() {
         }
     }
 
+    public static void newMember(Proyecto proyecto)throws Exception{
+        try {
+           ArrayList<Usuario> usuarios = db.getAllUsuariosInfo();
+            System.out.println("IDs de los estudiantes disponibles:");
+            for (Usuario usuario : usuarios) {
+                if (usuario instanceof Estudiante) {
+                    System.out.println("ID: " + usuario.getIdusuario() + " - Nombre: " + usuario.getNombre());
+                }
+            }
+            System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
+            int estudianteId = scanner.nextInt();
+            db.agregarMiembro(proyecto.getId(), estudianteId); 
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+        
+    }
+
     public static void createTask(int idProyecto) throws Exception {
         
         try {
@@ -472,14 +490,22 @@ public static void profesorsMenu() {
             String tareaNombre = scanner.nextLine();
             System.out.print("Descripción de la tarea: ");
             String tareaDescripcion = scanner.nextLine();
+            Proyecto actual = null;
+            for(Proyecto proyecto : proyectos) {
+                if(proyecto.getId() == idProyecto){
+                    actual = proyecto;
+                }
+            }
     
-            ArrayList<Usuario> usuarios = db.getAllUsuariosInfo();
+            ArrayList<Estudiante> usuarios = actual.getEstudiantes();
             System.out.println("IDs de los estudiantes disponibles:");
-            for (Usuario usuario : usuarios) {
+            for (Estudiante usuario : usuarios) {
                 if (usuario instanceof Estudiante) {
                     System.out.println("ID: " + usuario.getIdusuario() + " - Nombre: " + usuario.getNombre());
                 }
+                    
             }
+                System.out.println("ID: " + actual.getLiderProyecto().getIdusuario() + " - Nombre: " + actual.getLiderProyecto().getNombre());
     
             System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
             int estudianteId = scanner.nextInt();
@@ -494,8 +520,8 @@ public static void profesorsMenu() {
             } else {
                 System.out.println("Estudiante no encontrado con el ID proporcionado.");
             }
-        } catch (NoSuchElementException e) {
-            System.err.println("Entrada no válida. Asegúrate de ingresar valores numéricos válidos para el ID del estudiante.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         } finally {
             
         }

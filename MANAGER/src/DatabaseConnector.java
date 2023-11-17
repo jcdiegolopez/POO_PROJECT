@@ -263,7 +263,6 @@ public class DatabaseConnector {
         if (connection != null) {
             String insertQuery = "INSERT INTO tareas (NOMBRE, DESCRIPCION, FECHA_INICIO, FECHA_FIN, CALIFICACION, FINALIZADA, ID_PROYECTO, ID_USUARIOS) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                System.out.println(getConnection());
                 PreparedStatement stmt = connection.prepareStatement(insertQuery);
                 stmt.setString(1, nombre);
                 stmt.setString(2, descripcion);
@@ -279,6 +278,28 @@ public class DatabaseConnector {
                     System.out.println("Tarea insertada exitosamente en la base de datos.");
                 } else {
                     System.out.println("No se pudo insertar la tarea en la base de datos.");
+                }
+                stmt.close();
+        }else{
+            throw new Exception("No se pudo conectar con la base de datos");
+        }
+    }
+
+    public void agregarMiembro(int idProyecto, int idUsuarioAsignado) throws Exception {
+        openConnection();
+        if (connection != null) {
+            String insertQuery = "INSERT INTO EstudiantesProyectos (ID_USUARIOS, ID_PROYECTO) " +
+                        "VALUES (?, ?)";
+                PreparedStatement stmt = connection.prepareStatement(insertQuery);
+                stmt.setInt(1, idUsuarioAsignado); 
+                stmt.setInt(2, idProyecto); 
+    
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Tarea insertada exitosamente en la base de datos.");
+                } else {
+                    stmt.close();
+                    throw new Exception("No se pudo insertar la tarea en la base de datos.");
                 }
                 stmt.close();
         }else{
