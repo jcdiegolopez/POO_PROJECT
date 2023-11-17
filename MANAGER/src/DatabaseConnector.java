@@ -122,6 +122,12 @@ public class DatabaseConnector {
                     for (Tarea tarea : tareasDelProyecto) {
                         proyecto.agregarTarea(tarea);
                     }
+
+                    // Cargar las tareas del proyecto
+                    ArrayList<Estudiante> miembrosdelproyecto = getMiembrosPorProyecto(idProyecto);
+                    for (Estudiante estudiante : miembrosdelproyecto) {
+                        proyecto.agregarEstudiante(estudiante);
+                    }
     
                     // Añadir el proyecto a la lista
                     projects.add(proyecto);
@@ -311,6 +317,25 @@ public class DatabaseConnector {
         preparedStatement.close();
 
         return tareas;
+    }
+
+    public ArrayList<Estudiante> getMiembrosPorProyecto(int idProyecto) throws SQLException {
+        ArrayList<Estudiante> estudiantes = new ArrayList<>();
+        String query = "SELECT * FROM EstudiantesProyectos WHERE id_proyecto = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1, idProyecto);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            int idUsuario = resultSet.getInt("id_usuarios");
+            Estudiante estudiante = getEstudianteById(idUsuario);
+            estudiantes.add(estudiante);
+        }
+
+        resultSet.close();
+        preparedStatement.close();
+
+        return estudiantes;
     }
     
     public void actualizarFechaCierreTarea(int tareaId, LocalDate fechaCierre) throws SQLException, Exception {
