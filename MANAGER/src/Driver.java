@@ -1,9 +1,8 @@
-
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.NoSuchElementException;
+
 
 public class Driver {
     public static ArrayList<Usuario> usuarios = null;
@@ -18,8 +17,7 @@ public class Driver {
         reloadProjects();
         scanner = new Scanner(System.in);
         boolean loginCicle = true;
-    
-        try{  
+
         while (loginCicle) {
             System.out.println("1. Iniciar sesión");
             System.out.println("2. Salir");
@@ -55,13 +53,7 @@ public class Driver {
                     break;
             }
         }
-    } finally {
-        if (scanner != null && scanner.ioException() == null){
-            scanner.close();
-        }
     }
-}
-
     
     public static void studenstMenu() throws Exception {
         boolean continuar = true;
@@ -117,6 +109,7 @@ public class Driver {
                     break;
             }
         }
+    scanner.close();
     }
 
 
@@ -387,9 +380,8 @@ public static void profesorsMenu() {
         }
     }
 
-    public static void gradeProject(Proyecto proyecto) {
+    public static void gradeProject(Proyecto proyecto) throws Exception {
     
-
     System.out.print("Ingrese la calificación para el proyecto '" + proyecto.getNombre() + "': ");
     double calificacion = scanner.nextDouble();
 
@@ -397,6 +389,7 @@ public static void profesorsMenu() {
         db.actualizarCalificacionProyecto(proyecto.getId(), calificacion);
         proyecto.setCalificacion(calificacion); // Actualizar la calificación en el objeto Proyecto
         System.out.println("Proyecto calificado exitosamente: " + proyecto.getNombre());
+        reloadProjects();
     } catch (SQLException e) {
         System.err.println("Error al actualizar la calificación del proyecto: " + e.getMessage());
     } finally {
@@ -466,6 +459,7 @@ public static void profesorsMenu() {
     
         try {
             db.registrarProyecto(nombre, descripcion, fechaInicio, fechaFin, idLider, idMaestro);
+            reloadProjects();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -480,9 +474,11 @@ public static void profesorsMenu() {
                     System.out.println("ID: " + usuario.getIdusuario() + " - Nombre: " + usuario.getNombre());
                 }
             }
-            System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
+            System.out.print("Ingrese el ID del estudiante para agregar a miembro: ");
             int estudianteId = scanner.nextInt();
-            db.agregarMiembro(proyecto.getId(), estudianteId); 
+            db.agregarMiembro(proyecto.getId(), estudianteId);
+            System.out.print("Agregado miembro con exito!");
+            reloadProjects(); 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -614,7 +610,7 @@ public static void profesorsMenu() {
             LocalDate fechaCierre = LocalDate.now();
 
             db.actualizarFechaCierreTarea(tareaSeleccionada.getId(), fechaCierre);
-
+            reloadProjects();
             System.out.println("Tarea cerrada exitosamente: " + tareaSeleccionada.getNombre());
         } else {
             System.out.println("Número de tarea inválido.");
@@ -645,6 +641,7 @@ public static void profesorsMenu() {
                     for (Proyecto proyecto : proyectosAsignados) {
                         try {
                             dbConnector.cerrarProyecto(proyecto.getId());
+                            reloadProjects();
                             System.out.println("Proyecto '" + proyecto.getNombre() + "' cerrado con éxito.");
                         } catch (Exception e) {
                             System.out.println("Error al cerrar el proyecto '" + proyecto.getNombre() + "': " + e.getMessage());
@@ -655,6 +652,7 @@ public static void profesorsMenu() {
                     Proyecto proyectoSeleccionado = proyectosAsignados.get(selectedProjectIndex - 1);
                     try {
                         dbConnector.cerrarProyecto(proyectoSeleccionado.getId());
+                        reloadProjects();
                         System.out.println("Proyecto '" + proyectoSeleccionado.getNombre() + "' cerrado con éxito.");
                     } catch (Exception e) {
                         System.out.println("Error al cerrar el proyecto: " + e.getMessage());
@@ -665,6 +663,5 @@ public static void profesorsMenu() {
             }
         }
     
-        scanner.close();
     }
 }
