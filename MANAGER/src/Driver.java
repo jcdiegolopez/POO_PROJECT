@@ -18,7 +18,8 @@ public class Driver {
         reloadProjects();
         scanner = new Scanner(System.in);
         boolean loginCicle = true;
-
+    
+        try{  
         while (loginCicle) {
             System.out.println("1. Iniciar sesión");
             System.out.println("2. Salir");
@@ -54,7 +55,13 @@ public class Driver {
                     break;
             }
         }
+    } finally {
+        if (scanner != null && scanner.ioException() == null){
+            scanner.close();
+        }
     }
+}
+
     
     public static void studenstMenu() throws Exception {
         boolean continuar = true;
