@@ -465,6 +465,9 @@ public void mostrarChat(int idProyecto) throws SQLException, Exception {
     }
 }
 
+public void enviarMensaje(int idproyecto, String mensaje, int idusuario){
+    
+}
     
     
     

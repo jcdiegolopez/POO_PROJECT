@@ -277,7 +277,7 @@ public static void profesorsMenu() {
                     break;
                 case 4:
                     // Acceder al chat del proyecto
-                    //accessProjectChat(proyecto);
+                    enterProjectChat(proyecto.getId());
                     break;
                 case 5:
                     closeTasks(proyecto);
@@ -290,6 +290,40 @@ public static void profesorsMenu() {
             }
         }
     }
+
+    public static void enterProjectChat(int idProyecto) throws SQLException, Exception {
+        try {
+            while (true) {
+                db.mostrarChat(idProyecto);
+                System.out.println("1. Enviar mensaje");
+                System.out.println("2. Salir del chat");
+    
+                System.out.print("Seleccione una opción: ");
+                int chatOption = scanner.nextInt();
+                scanner.nextLine();  // Consumir la nueva línea
+    
+                switch (chatOption) {
+                    case 1:
+                        scanner.nextLine();  // Consumir la nueva línea
+                        System.out.println("Ingrese su mensaje:");
+                        String mensaje = scanner.nextLine();
+                        db.enviarMensaje(idProyecto, mensaje, account.getIdusuario());
+                        break;
+                    case 2:
+                        System.out.println("Saliendo del chat del proyecto.");
+                        return;
+                    default:
+                        System.out.println("Opción no válida.");
+                        break;
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al acceder al chat del proyecto: " + e.getMessage());
+        } catch (Exception ex) {
+            System.err.println("Error inesperado al acceder al chat del proyecto: " + ex.getMessage());
+        }
+    }
+    
 
     public static void showClosedProjectMenuStudents(Proyecto proyecto) throws Exception {
         while (true) {
