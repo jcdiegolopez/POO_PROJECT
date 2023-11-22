@@ -488,10 +488,7 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
         int idMaestro = -1;
     
         if (account.getTipo().equals("ESTUDIANTE")) {
-            System.out.print("Ingrese su ID de estudiante líder: ");
-            idLider = scanner.nextInt();
-            scanner.nextLine(); 
-    
+            idLider = account.getIdusuario();
             System.out.println("Seleccione un maestro para el proyecto:");
             for (int i = 0; i < usuarios.size(); i++) {
                 if (usuarios.get(i) instanceof Maestro) {
@@ -509,9 +506,7 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
             }
         } else if (account.getTipo().equals("MAESTRO")) {
             idMaestro = account.getIdusuario();
-            System.out.print("Ingrese el ID del estudiante líder del proyecto: ");
-            idLider = scanner.nextInt();
-            scanner.nextLine();
+            idLider = account.getIdusuario();
         } else {
             System.out.println("Tipo de cuenta no reconocido para la creación de proyectos.");
             return;
@@ -532,8 +527,11 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
         try {
            ArrayList<Usuario> usuarios = db.getAllUsuariosInfo();
             System.out.println("IDs de los estudiantes disponibles:");
+            Boolean val;
             for (Usuario usuario : usuarios) {
-                if (usuario instanceof Estudiante) {
+                val = proyecto.getEstudiantes().stream()
+                .anyMatch(estudiante ->  (estudiante.getIdusuario() == usuario.getIdusuario()));
+                if (usuario instanceof Estudiante && !val && (usuario.getIdusuario()!=account.getIdusuario()) &&  (usuario.getIdusuario()!=proyecto.getLiderProyecto().getIdusuario())) {
                     System.out.println("ID: " + usuario.getIdusuario() + " - Nombre: " + usuario.getNombre());
                 }
             }
@@ -551,6 +549,7 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
 
     public static void createTask(int idProyecto) throws Exception {
         try {
+            scanner.nextLine();
             System.out.println("========== CREACIÓN DE TAREA ==========");
             System.out.print("Nombre de la tarea: ");
             String tareaNombre = scanner.nextLine();
@@ -568,14 +567,17 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
                 return;
             }
     
-            ArrayList<Usuario> todosLosEstudiantes = db.getAllUsuariosInfo();
+            ArrayList<Estudiante> todosLosEstudiantes = actual.getEstudiantes();
+            todosLosEstudiantes.add(db.getEstudianteById(actual.getLiderProyecto().getIdusuario()));
             
+            if(todosLosEstudiantes.size()!=0){
             System.out.println("IDs de los estudiantes disponibles:");
             for (Usuario usuario : todosLosEstudiantes) {
-                if (usuario instanceof Estudiante && usuario.getIdusuario() != actual.getLiderProyecto().getIdusuario()) {
+                if (usuario instanceof Estudiante) {
                     System.out.println("ID: " + usuario.getIdusuario() + " - Nombre: " + usuario.getNombre());
                 }
             }
+             
     
             System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
             int estudianteId = scanner.nextInt();
@@ -588,10 +590,13 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
                 db.insertarTarea(tareaNombre, tareaDescripcion, fechaInicio, idProyecto, estudianteId);
                 reloadProjects();
                 System.out.println("Tarea asignada con éxito.");
-                actualizarTareas(actual);
+                
             } else {
                 System.out.println("Estudiante no encontrado con el ID proporcionado.");
             }
+        }else{
+            throw new Exception("Aun no hay miembros agregados al proyecto.");
+        }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -602,10 +607,11 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
     }
 
 
-    public static void actualizarTareas(Proyecto proyecto) throws Exception{
+    public static ArrayList<Tarea> actualizarTareas(Proyecto proyecto) throws Exception{
         try {
             ArrayList<Tarea> nuevas = db.getTareasPorProyecto(proyecto.getId());
-            proyecto.setTareas(nuevas);
+            System.out.println(nuevas);
+            return nuevas;
 
         } catch (Exception e) {
             throw new Exception(e);
@@ -641,6 +647,7 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
 
 
     public static void showTasks(Proyecto proyecto) throws Exception {
+        proyecto.setTareas(actualizarTareas(proyecto));
         ArrayList<Tarea> tareasDelProyecto = proyecto.getTareas();
     
         if (tareasDelProyecto.isEmpty()) {

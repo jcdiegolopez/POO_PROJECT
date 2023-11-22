@@ -306,7 +306,7 @@ public class DatabaseConnector {
     
                 int rowsAffected = stmt.executeUpdate();
                 if (rowsAffected > 0) {
-                    System.out.println("Tarea insertada exitosamente en la base de datos.");
+                    System.out.println("Miembro agregado exitosamente.");
                 } else {
                     stmt.close();
                     throw new Exception("No se pudo insertar la tarea en la base de datos.");
