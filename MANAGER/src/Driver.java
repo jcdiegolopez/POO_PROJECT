@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 
 public class Driver {    public static ArrayList<Usuario> usuarios = null;
@@ -37,7 +36,7 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
                         account = loginUser(email, password);
                         if (account != null) {
                             if (account.getTipo().equals("ESTUDIANTE")) {
-                                studenstMenu();
+                                studentsMenu();
                             } else if (account.getTipo().equals("MAESTRO")) {
                                 profesorsMenu();
                             }
@@ -57,28 +56,33 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
         }
     }
     
-    public static void studenstMenu() throws Exception {
+    public static void studentsMenu() throws Exception {
         boolean continuar = true;
-
+    
         while (continuar) {
             System.out.println("===================== MENU ESTUDIANTE =====================");
-            System.out.println("1. Ver proyectos");
-            System.out.println("2. Crear Proyecto");
-            System.out.println("3. Cerrar proyecto");
-            System.out.println("4. Salir");
+            System.out.println("1. Ver proyectos activos");
+            System.out.println("2. Ver proyectos cerrados");
+            System.out.println("3. Crear Proyecto");
+            System.out.println("4. Cerrar proyecto");
+            System.out.println("5. Salir");
             System.out.print("Elija una opción: ");
             int opt = scanner.nextInt();
-
+    
             switch (opt) {
                 case 1:
-                showStudentsProjects();
+                    showActiveProjects();
+                    break;
                 case 2:
-                    createProject();
+                    showClosedProjects();
                     break;
                 case 3:
-                    closeProjects(db);                    
+                    createProject();
                     break;
                 case 4:
+                    closeProjects(db);                    
+                    break;
+                case 5:
                     System.out.println("Saliendo del menú estudiante.");
                     continuar = false;
                     break;
@@ -87,96 +91,96 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
                     break;
             }
         }
-    scanner.close();
+        scanner.close();
     }
 
 
 
-public static void profesorsMenu() {
-        boolean continuar = true;
-    
-        while (continuar) {
-            System.out.println("================================= MENU MAESTRO =================================");
-            System.out.println("1. Ver Proyectos");
-            System.out.println("2. Crear Proyectos");
-            System.out.println("3. Cerrar proyecto");
-            System.out.println("4. Crear nuevo usuario");
-            System.out.println("5. Salir");
-            System.out.print("Elija una opción: ");
-            int opt = scanner.nextInt();
-    
-            switch (opt) {
-                case 1:
-                    ArrayList<Proyecto> filtrados = filtrarProyectosPorUsuarioLogueado();
-                    int count = filtrados.size();
-                    if (count > 0) {
-                        if (count == 1) {
-                            Proyecto selectedProject = filtrados.get(0);
-                            showProjectMenuProfesor(selectedProject); 
-                        } else {
-                            for (int i = 0; i < count; i++) {
-                                System.out.println(i + ". " + filtrados.get(i).getNombre());
-                            }
-                            
-                            System.out.print("Seleccione un proyecto (0-" + (count - 1) + "): ");
-                            int projectChoice = scanner.nextInt();
-                    
-                            if (projectChoice >= 0 && projectChoice < count) {
-                                Proyecto selectedProject = filtrados.get(projectChoice);
-                                showProjectMenuProfesor(selectedProject);
+    public static void profesorsMenu() {
+            boolean continuar = true;
+        
+            while (continuar) {
+                System.out.println("================================= MENU MAESTRO =================================");
+                System.out.println("1. Ver Proyectos");
+                System.out.println("2. Crear Proyectos");
+                System.out.println("3. Cerrar proyecto");
+                System.out.println("4. Crear nuevo usuario");
+                System.out.println("5. Salir");
+                System.out.print("Elija una opción: ");
+                int opt = scanner.nextInt();
+        
+                switch (opt) {
+                    case 1:
+                        ArrayList<Proyecto> filtrados = filtrarProyectosPorUsuarioLogueado();
+                        int count = filtrados.size();
+                        if (count > 0) {
+                            if (count == 1) {
+                                Proyecto selectedProject = filtrados.get(0);
+                                showProjectMenuProfesor(selectedProject); 
                             } else {
-                                System.out.println("Selección no válida.");
+                                for (int i = 0; i < count; i++) {
+                                    System.out.println(i + ". " + filtrados.get(i).getNombre());
+                                }
+                                
+                                System.out.print("Seleccione un proyecto (0-" + (count - 1) + "): ");
+                                int projectChoice = scanner.nextInt();
+                        
+                                if (projectChoice >= 0 && projectChoice < count) {
+                                    Proyecto selectedProject = filtrados.get(projectChoice);
+                                    showProjectMenuProfesor(selectedProject);
+                                } else {
+                                    System.out.println("Selección no válida.");
+                                }
                             }
+                        } else {
+                            System.out.println("No hay proyectos disponibles.");
                         }
-                    } else {
-                        System.out.println("No hay proyectos disponibles.");
-                    }
-                    break;
-            
-                case 2:
-                    createProject();
-                    break;
-                case 3:
-                    closeProjects(db);                    
-                    break;
-                case 4:
-                    System.out.println("==================== CREACIÓN DE USUARIO =====================");
-                    try {
-                        scanner.nextLine();
-                        System.out.print("Nombre: ");
-                        String nombre = scanner.nextLine();
-                        System.out.print("Usuario: ");
-                        String usuario = scanner.nextLine();
-                        System.out.print("Contraseña: ");
-                        String password = scanner.nextLine();
-                        System.out.print("Apellido: ");
-                        String apellido = scanner.nextLine();
-                        System.out.print("Correo Electrónico: ");
-                        String mail = scanner.nextLine();
-                        System.out.print("Sede: ");
-                        String sede = scanner.nextLine();
-                        System.out.println("1.Estudiante ");
-                        System.out.println("2.Maestro ");
-                        System.out.print("Tipo: ");
-                        int sel1 = scanner.nextInt();
-                        String tipo = (sel1 == 1) ? "ESTUDIANTE" : "MAESTRO";
+                        break;
+                
+                    case 2:
+                        createProject();
+                        break;
+                    case 3:
+                        closeProjects(db);                    
+                        break;
+                    case 4:
+                        System.out.println("==================== CREACIÓN DE USUARIO =====================");
+                        try {
+                            scanner.nextLine();
+                            System.out.print("Nombre: ");
+                            String nombre = scanner.nextLine();
+                            System.out.print("Usuario: ");
+                            String usuario = scanner.nextLine();
+                            System.out.print("Contraseña: ");
+                            String password = scanner.nextLine();
+                            System.out.print("Apellido: ");
+                            String apellido = scanner.nextLine();
+                            System.out.print("Correo Electrónico: ");
+                            String mail = scanner.nextLine();
+                            System.out.print("Sede: ");
+                            String sede = scanner.nextLine();
+                            System.out.println("1.Estudiante ");
+                            System.out.println("2.Maestro ");
+                            System.out.print("Tipo: ");
+                            int sel1 = scanner.nextInt();
+                            String tipo = (sel1 == 1) ? "ESTUDIANTE" : "MAESTRO";
 
-                        RegisterUser(nombre, usuario, password, apellido, mail, sede, tipo);
-                        System.out.println("Usuario creado con éxito!");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case 5:
-                    System.out.println("Saliendo del menú Maestro.");
-                    continuar = false;
-                    break;
-                default:
-                    System.out.println("Opción no válida");
-                    break;
+                            RegisterUser(nombre, usuario, password, apellido, mail, sede, tipo);
+                            System.out.println("Usuario creado con éxito!");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 5:
+                        System.out.println("Saliendo del menú Maestro.");
+                        continuar = false;
+                        break;
+                    default:
+                        System.out.println("Opción no válida");
+                        break;
+                }
             }
         }
-    }
     
     public static void showProjectsProfesor() {
         System.out.println("Proyectos como Maestro:");
@@ -203,51 +207,77 @@ public static void profesorsMenu() {
         }
     }
     
-    public static void showStudentsProjects() throws Exception {
-        System.out.println("Proyectos en los que está inscrito el estudiante:");
+    public static void showActiveProjects() throws Exception {
+        System.out.println("Proyectos activos en los que está inscrito el estudiante:");
         ArrayList<Proyecto> proyectosFiltrados = filtrarProyectosPorUsuarioLogueado();
     
         if (proyectosFiltrados.isEmpty()) {
-            System.out.println("No estás inscrito en ningún proyecto.");
+            System.out.println("No estás inscrito en ningún proyecto activo.");
             return;
         }
     
         ArrayList<Proyecto> proyectosActivos = new ArrayList<>();
-        ArrayList<Proyecto> proyectosCerrados = new ArrayList<>();
         for (Proyecto proyecto : proyectosFiltrados) {
             if (proyecto.getFechaFin() == null) {
                 proyectosActivos.add(proyecto);
-            } else {
-                proyectosCerrados.add(proyecto);
             }
         }
     
-        System.out.println("Proyectos activos:");
+        if (proyectosActivos.isEmpty()) {
+            System.out.println("No hay proyectos activos.");
+            return;
+        }
+    
         for (int i = 0; i < proyectosActivos.size(); i++) {
             System.out.println((i + 1) + ". " + proyectosActivos.get(i).getNombre());
         }
     
-        System.out.println("Proyectos cerrados:");
-        for (int i = 0; i < proyectosCerrados.size(); i++) {
-            System.out.println((i + 1 + proyectosActivos.size()) + ". " + proyectosCerrados.get(i).getNombre());
-        }
-    
-        System.out.print("Seleccione un proyecto (número): ");
+        System.out.print("Seleccione un proyecto activo (número): ");
         int projectChoice = scanner.nextInt();
     
         if (projectChoice >= 1 && projectChoice <= proyectosActivos.size()) {
             Proyecto selectedProject = proyectosActivos.get(projectChoice - 1);
             showProjectMenuStudents(selectedProject);
-        } else if (projectChoice > proyectosActivos.size() && projectChoice <= (proyectosActivos.size() + proyectosCerrados.size())) {
-            Proyecto selectedProject = proyectosCerrados.get(projectChoice - proyectosActivos.size() - 1);
-            showClosedProjectMenuStudents(selectedProject);
-            return;
         } else {
             System.out.println("Selección no válida.");
         }
     }
+
+    public static void showClosedProjects() throws Exception {
+        System.out.println("Proyectos cerrados en los que estuvo inscrito el estudiante:");
+        ArrayList<Proyecto> proyectosFiltrados = filtrarProyectosPorUsuarioLogueado();
     
+        if (proyectosFiltrados.isEmpty()) {
+            System.out.println("No estuvo inscrito en ningún proyecto cerrado.");
+            return;
+        }
     
+        ArrayList<Proyecto> proyectosCerrados = new ArrayList<>();
+        for (Proyecto proyecto : proyectosFiltrados) {
+            if (proyecto.getFechaFin() != null) {
+                proyectosCerrados.add(proyecto);
+            }
+        }
+    
+        if (proyectosCerrados.isEmpty()) {
+            System.out.println("No hay proyectos cerrados.");
+            return;
+        }
+    
+        for (int i = 0; i < proyectosCerrados.size(); i++) {
+            System.out.println((i + 1) + ". " + proyectosCerrados.get(i).getNombre());
+        }
+    
+        System.out.print("Seleccione un proyecto cerrado (número): ");
+        int projectChoice = scanner.nextInt();
+    
+        if (projectChoice >= 1 && projectChoice <= proyectosCerrados.size()) {
+            Proyecto selectedProject = proyectosCerrados.get(projectChoice - 1);
+            showClosedProjectMenuStudents(selectedProject);
+        } else {
+            System.out.println("Selección no válida.");
+        }
+    }
     
     public static void showProjectMenuStudents(Proyecto proyecto) throws Exception {
         while (true) {
@@ -695,7 +725,6 @@ public static void profesorsMenu() {
                 for (Proyecto proyecto : proyectosACerrar) {
                     try {
                         dbConnector.cerrarProyecto(proyecto.getId(), fechaCierre);
-                        // Actualizar las tareas del proyecto
                         for (Tarea tarea : proyecto.getTareas()) {
                             if (!tarea.isFinalizada()) {
                                 dbConnector.actualizarFechaCierreTarea(tarea.getId(), fechaCierre);
