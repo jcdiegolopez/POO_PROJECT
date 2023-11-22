@@ -3,9 +3,7 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "c:\\Users\\dijol\\Downloads\\mysql-connector-j-8.2.0\\mysql-connector-j-8.2.0\\mysql-connector-j-8.2.0.jar",
-        "c:\\Users\\anna2\\Downloads\\mysql-connector-j-8.2.0.jar",
-        "c:\\Users\\bjjaq\\Downloads\\mysql-connector-j-8.2.0.jar",
-        "/Users/joseruiz/Downloads/mysql-connector-j-8.2.0.jar"
+        "../mysql-connector-j-8.2.0.jar"
     ]
 }
+
