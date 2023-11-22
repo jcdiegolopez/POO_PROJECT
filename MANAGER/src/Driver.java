@@ -341,7 +341,7 @@ public static void profesorsMenu() {
                     break;
                 case 2:
                     // Acceder al chat del proyecto
-                    //accessProjectChat(proyecto);
+                    enterProjectChat(proyecto.getId());
                     break;
                 case 3:
                     return;
@@ -379,7 +379,7 @@ public static void profesorsMenu() {
                     case 2:
                         try {
                             // Acceder al chat del proyecto
-                            //accessProjectChat(proyecto);
+                            enterProjectChat(proyecto.getId());
                         } catch (Exception e) {
                             System.err.println("Error al acceder al chat del proyecto: " + e.getMessage());
                         }
