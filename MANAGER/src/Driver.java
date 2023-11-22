@@ -262,7 +262,7 @@ public static void profesorsMenu() {
     
             System.out.print("Seleccione una opción: ");
             int option = scanner.nextInt();
-            scanner.nextLine();
+            
     
             switch (option) {
                 case 1:
@@ -331,7 +331,7 @@ public static void profesorsMenu() {
             System.out.println("3. Regresar al menú anterior");
             System.out.print("Seleccione una opción: ");
             int option = scanner.nextInt();
-            scanner.nextLine();
+            
     
             switch (option) {
                 case 1:
@@ -363,7 +363,7 @@ public static void profesorsMenu() {
     
                 System.out.print("Seleccione una opción: ");
                 int option = scanner.nextInt();
-                scanner.nextLine();
+                
     
                 switch (option) {
                     case 1:
