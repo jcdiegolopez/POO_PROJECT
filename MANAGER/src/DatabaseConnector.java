@@ -222,10 +222,10 @@ public class DatabaseConnector {
        }
     }
 
-    public void registrarProyecto(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int idLider, int idMaestroAsociado) throws Exception {
+    public void registrarProyecto(String nombre, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, int idLider, int idMaestroAsociado, Double calificacion) throws Exception {
         openConnection();
         if (connection != null) {
-            String query = "INSERT INTO proyectos (nombre, descripcion, fecha_inicio, fecha_fin, id_lider, id_maestro_asociado) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO proyectos (nombre, descripcion, fecha_inicio, fecha_fin, id_lider, id_maestro_asociado, calificacion) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, nombre);
             preparedStatement.setString(2, descripcion);
@@ -233,7 +233,12 @@ public class DatabaseConnector {
             preparedStatement.setDate(4, (fechaFin != null) ? java.sql.Date.valueOf(fechaFin) : null);
             preparedStatement.setInt(5, idLider);
             preparedStatement.setInt(6, idMaestroAsociado);
-            preparedStatement.setDouble(7, 0.0);
+    
+            if (calificacion != null) {
+                preparedStatement.setDouble(7, calificacion);
+            } else {
+                preparedStatement.setNull(7, java.sql.Types.DOUBLE);
+            }
     
             int filasAfectadas = preparedStatement.executeUpdate();
             if (filasAfectadas > 0) {
@@ -247,19 +252,22 @@ public class DatabaseConnector {
         }
     }
     
-    public void actualizarCalificacionProyecto(int idProyecto, double calificacion) throws SQLException {
+    
+    public void actualizarCalificacionProyecto(int idProyecto, Double calificacion) throws SQLException {
         String query = "UPDATE proyectos SET CALIFICACION = ? WHERE ID_PROYECTO = ?";
         
-        try (
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setDouble(1, calificacion);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            if (calificacion != null) {
+                preparedStatement.setDouble(1, calificacion);
+            } else {
+                preparedStatement.setNull(1, java.sql.Types.DOUBLE);
+            }
             preparedStatement.setInt(2, idProyecto);
             
             preparedStatement.executeUpdate();
         }
     }
     
-
     public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws Exception {
         openConnection();
         if (connection != null) {
