@@ -449,8 +449,8 @@ public void mostrarChat(int idProyecto) throws SQLException, Exception {
                 Timestamp timestamp = resultSet.getTimestamp("FECHA_ENVIO");
                 LocalDateTime fechaEnvio = timestamp.toLocalDateTime();
                 int idUsuarioEmisor = resultSet.getInt("ID_USUARIO_EMISOR");
-
-                System.out.println("[" + fechaEnvio + "] Usuario " + idUsuarioEmisor + ": " + contenido);
+                Estudiante emisor = getEstudianteById(idUsuarioEmisor);
+                System.out.println("[" + fechaEnvio + "]  " + emisor.getNombre() + ": " + contenido);
             }
 
             resultSet.close();
@@ -465,9 +465,28 @@ public void mostrarChat(int idProyecto) throws SQLException, Exception {
     }
 }
 
-public void enviarMensaje(int idproyecto, String mensaje, int idusuario){
-    
+public void enviarMensaje(int idProyecto, String contenido, int idUsuarioEmisor) throws SQLException, Exception {
+    try {
+        openConnection();
+        if (connection != null) {
+            String insertQuery = "INSERT INTO mensajes (CONTENIDO, FECHA_ENVIO, ID_USUARIO_EMISOR, ID_PROYECTO) VALUES (?, NOW(), ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+            preparedStatement.setString(1, contenido);
+            preparedStatement.setInt(2, idUsuarioEmisor);
+            preparedStatement.setInt(3, idProyecto);
+
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } else {
+            throw new SQLException("No se pudo conectar con la base de datos.");
+        }
+    } catch (SQLException e) {
+        throw new SQLException("Error al enviar mensaje: " + e.getMessage());
+    } catch (Exception ex) {
+        throw new Exception("Error inesperado al enviar mensaje: " + ex.getMessage());
+    }
 }
+
     
     
     

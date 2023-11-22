@@ -304,7 +304,6 @@ public static void profesorsMenu() {
     
                 switch (chatOption) {
                     case 1:
-                        scanner.nextLine();  // Consumir la nueva línea
                         System.out.println("Ingrese su mensaje:");
                         String mensaje = scanner.nextLine();
                         db.enviarMensaje(idProyecto, mensaje, account.getIdusuario());
