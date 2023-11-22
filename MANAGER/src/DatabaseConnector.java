@@ -330,7 +330,6 @@ public class DatabaseConnector {
 
             // Asumiendo que la clase Tarea tiene un constructor que acepta un Usuario
             Tarea tarea = new Tarea(idTarea,nombre, estudianteAsignado, fechaInicio, fechaFin, descripcion, idProyecto, idUsuarioAsignado, finalizada);
-            tarea.marcarComoFinalizada();
             tareas.add(tarea);
         }
 
@@ -363,10 +362,11 @@ public class DatabaseConnector {
         try {
             openConnection();
             if (connection != null) {
-                String updateQuery = "UPDATE tareas SET FECHA_FIN = ? WHERE id_tarea = ?";
+                String updateQuery = "UPDATE tareas SET FECHA_FIN = ?, FINALIZADA = ? WHERE id_tarea = ?";
                 PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
                 preparedStatement.setDate(1, java.sql.Date.valueOf(fechaCierre));
-                preparedStatement.setInt(2, tareaId);
+                preparedStatement.setBoolean(2, true);
+                preparedStatement.setInt(3, tareaId);
     
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected > 0) {
@@ -385,7 +385,7 @@ public class DatabaseConnector {
         }
     }
 
-    public void cerrarProyecto(int idProyecto) throws Exception {
+    public void cerrarProyecto(int idProyecto, LocalDate fechaCierre) throws Exception {
         try {
             openConnection();
             if (connection != null) {
@@ -412,7 +412,7 @@ public class DatabaseConnector {
                 // Actualizar la fecha de finalización del proyecto
                 String updateQuery = "UPDATE proyectos SET fecha_fin = ? WHERE id_proyecto = ?";
                 PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
-                preparedStatement.setDate(1, java.sql.Date.valueOf(LocalDate.now()));
+                preparedStatement.setDate(1, java.sql.Date.valueOf(fechaCierre));
                 preparedStatement.setInt(2, idProyecto);
     
                 int rowsAffected = preparedStatement.executeUpdate();

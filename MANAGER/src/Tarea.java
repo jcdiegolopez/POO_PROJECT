@@ -33,6 +33,8 @@ public class Tarea {
         return idTarea;
     }
 
+   
+    
     public void setId ( int id) {
         this.idTarea = id;
     }
