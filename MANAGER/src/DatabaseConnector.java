@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.sql.Timestamp;
 
 public class DatabaseConnector {
     private Connection connection = null;    
@@ -430,6 +432,40 @@ public class DatabaseConnector {
             throw new SQLException("Error al cerrar el proyecto: " + e.getMessage());
         }
     }
+
+
+
+public void mostrarChat(int idProyecto) throws SQLException, Exception {
+    try {
+        openConnection();
+        if (connection != null) {
+            String selectQuery = "SELECT * FROM mensajes WHERE ID_PROYECTO = ? ORDER BY FECHA_ENVIO";
+            PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+            preparedStatement.setInt(1, idProyecto);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String contenido = resultSet.getString("CONTENIDO");
+                Timestamp timestamp = resultSet.getTimestamp("FECHA_ENVIO");
+                LocalDateTime fechaEnvio = timestamp.toLocalDateTime();
+                int idUsuarioEmisor = resultSet.getInt("ID_USUARIO_EMISOR");
+
+                System.out.println("[" + fechaEnvio + "] Usuario " + idUsuarioEmisor + ": " + contenido);
+            }
+
+            resultSet.close();
+            preparedStatement.close();
+        } else {
+            throw new SQLException("No se pudo conectar con la base de datos.");
+        }
+    } catch (SQLException e) {
+        throw new SQLException("Error al mostrar el chat: " + e.getMessage());
+    } catch (Exception ex) {
+        throw new Exception("Error inesperado: " + ex.getMessage());
+    }
+}
+
+    
     
     
 
