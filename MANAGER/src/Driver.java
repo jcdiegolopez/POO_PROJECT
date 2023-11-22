@@ -1,6 +1,8 @@
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 
@@ -272,11 +274,9 @@ public static void profesorsMenu() {
                     createTask(proyecto.getId());                    
                     break;
                 case 3:
-                    // Agregar miembro
                     newMember(proyecto);
                     break;
                 case 4:
-                    // Acceder al chat del proyecto
                     enterProjectChat(proyecto.getId());
                     break;
                 case 5:
@@ -300,7 +300,7 @@ public static void profesorsMenu() {
     
                 System.out.print("Seleccione una opción: ");
                 int chatOption = scanner.nextInt();
-                scanner.nextLine();  // Consumir la nueva línea
+                scanner.nextLine();
     
                 switch (chatOption) {
                     case 1:
@@ -340,7 +340,6 @@ public static void profesorsMenu() {
                     showTasks(proyecto);
                     break;
                 case 2:
-                    // Acceder al chat del proyecto
                     enterProjectChat(proyecto.getId());
                     break;
                 case 3:
@@ -378,7 +377,6 @@ public static void profesorsMenu() {
                         break;
                     case 2:
                         try {
-                            // Acceder al chat del proyecto
                             enterProjectChat(proyecto.getId());
                         } catch (Exception e) {
                             System.err.println("Error al acceder al chat del proyecto: " + e.getMessage());
@@ -502,7 +500,6 @@ public static void profesorsMenu() {
         }
     }
     
-    
     public static void newMember(Proyecto proyecto)throws Exception{
         try {
            ArrayList<Usuario> usuarios = db.getAllUsuariosInfo();
@@ -525,7 +522,6 @@ public static void profesorsMenu() {
     }
 
     public static void createTask(int idProyecto) throws Exception {
-        
         try {
             System.out.println("========== CREACIÓN DE TAREA ==========");
             System.out.print("Nombre de la tarea: ");
@@ -533,24 +529,29 @@ public static void profesorsMenu() {
             System.out.print("Descripción de la tarea: ");
             String tareaDescripcion = scanner.nextLine();
             Proyecto actual = null;
-            for(Proyecto proyecto : proyectos) {
-                if(proyecto.getId() == idProyecto){
+            for (Proyecto proyecto : proyectos) {
+                if (proyecto.getId() == idProyecto) {
                     actual = proyecto;
                 }
             }
     
-            ArrayList<Estudiante> usuarios = actual.getEstudiantes();
+            if (actual == null) {
+                System.out.println("Proyecto no encontrado.");
+                return;
+            }
+    
+            ArrayList<Usuario> todosLosEstudiantes = db.getAllUsuariosInfo();
+            
             System.out.println("IDs de los estudiantes disponibles:");
-            for (Estudiante usuario : usuarios) {
-                if (usuario instanceof Estudiante) {
+            for (Usuario usuario : todosLosEstudiantes) {
+                if (usuario instanceof Estudiante && usuario.getIdusuario() != actual.getLiderProyecto().getIdusuario()) {
                     System.out.println("ID: " + usuario.getIdusuario() + " - Nombre: " + usuario.getNombre());
                 }
-                    
             }
-                System.out.println("ID: " + actual.getLiderProyecto().getIdusuario() + " - Nombre: " + actual.getLiderProyecto().getNombre());
     
             System.out.print("Ingrese el ID del estudiante al que desea asignar la tarea: ");
             int estudianteId = scanner.nextInt();
+            scanner.nextLine(); 
     
             Estudiante estudianteAsignado = findEstudianteById(estudianteId);
     
@@ -565,11 +566,8 @@ public static void profesorsMenu() {
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-        } finally {
-            
         }
     }
-    
 
     public static void reloadProjects()throws Exception{
         proyectos = db.getAllProjects();
@@ -678,11 +676,8 @@ public static void profesorsMenu() {
     }
 
     public static void closeProjects(DatabaseConnector dbConnector) {
-        // Lógica para obtener los proyectos asignados al usuario actualmente logueado
         ArrayList<Proyecto> proyectosAsignados = filtrarProyectosPorUsuarioLogueado();
-        
-        
-        
+
         if (proyectosAsignados.isEmpty()) {
             System.out.println("No hay proyectos asignados para cerrar.");
         } else {
@@ -690,39 +685,34 @@ public static void profesorsMenu() {
             for (int i = 0; i < proyectosAsignados.size(); i++) {
                 System.out.println((i + 1) + ". " + proyectosAsignados.get(i).getNombre());
             }
-    
+
             System.out.print("Seleccione el número del proyecto que desea cerrar (0 para cerrar todos): ");
             int selectedProjectIndex = scanner.nextInt();
             LocalDate fechaCierre = LocalDate.now();
+
             if (selectedProjectIndex >= 0 && selectedProjectIndex <= proyectosAsignados.size()) {
-                if (selectedProjectIndex == 0) {
-                    // Cerrar todos los proyectos asignados
-                    for (Proyecto proyecto : proyectosAsignados) {
-                        try {
-                            dbConnector.cerrarProyecto(proyecto.getId(),fechaCierre);
-                            reloadProjects();
-                            proyecto.setFechaFin(fechaCierre);
-                            System.out.println("Proyecto '" + proyecto.getNombre() + "' cerrado con éxito.");
-                        } catch (Exception e) {
-                            System.out.println("Error al cerrar el proyecto '" + proyecto.getNombre() + "': " + e.getMessage());
-                        }
-                    }
-                } else {
-                    // Cerrar proyecto seleccionado
-                    Proyecto proyectoSeleccionado = proyectosAsignados.get(selectedProjectIndex - 1);
+                List<Proyecto> proyectosACerrar = selectedProjectIndex == 0 ? proyectosAsignados
+                                                                        : Collections.singletonList(proyectosAsignados.get(selectedProjectIndex - 1));
+
+                for (Proyecto proyecto : proyectosACerrar) {
                     try {
-                        dbConnector.cerrarProyecto(proyectoSeleccionado.getId(),fechaCierre);
+                        dbConnector.cerrarProyecto(proyecto.getId(), fechaCierre);
+                        // Actualizar las tareas del proyecto
+                        for (Tarea tarea : proyecto.getTareas()) {
+                            if (!tarea.isFinalizada()) {
+                                dbConnector.actualizarFechaCierreTarea(tarea.getId(), fechaCierre);
+                            }
+                        }
                         reloadProjects();
-                        proyectoSeleccionado.setFechaFin(fechaCierre);
-                        System.out.println("Proyecto '" + proyectoSeleccionado.getNombre() + "' cerrado con éxito.");
+                        proyecto.setFechaFin(fechaCierre);
+                        System.out.println("Proyecto '" + proyecto.getNombre() + "' cerrado con éxito.");
                     } catch (Exception e) {
-                        System.out.println("Error al cerrar el proyecto: " + e.getMessage());
+                        System.out.println("Error al cerrar el proyecto '" + proyecto.getNombre() + "': " + e.getMessage());
                     }
                 }
             } else {
                 System.out.println("Número de proyecto inválido.");
             }
         }
-    
     }
 }

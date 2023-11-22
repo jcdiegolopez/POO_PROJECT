@@ -268,32 +268,32 @@ public class DatabaseConnector {
         }
     }
     
-    public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio,  int idProyecto, int idUsuarioAsignado) throws Exception {
+    public void insertarTarea(String nombre, String descripcion, LocalDate fechaInicio, int idProyecto, int idUsuarioAsignado) throws Exception {
         openConnection();
         if (connection != null) {
-            String insertQuery = "INSERT INTO tareas (NOMBRE, DESCRIPCION, FECHA_INICIO, FECHA_FIN, CALIFICACION, FINALIZADA, ID_PROYECTO, ID_USUARIOS) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                PreparedStatement stmt = connection.prepareStatement(insertQuery);
-                stmt.setString(1, nombre);
-                stmt.setString(2, descripcion);
-                stmt.setDate(3, java.sql.Date.valueOf(fechaInicio));
-                stmt.setDate(4, null);
-                stmt.setInt(5, -1);
-                stmt.setBoolean(6, false);
-                stmt.setInt(7, idProyecto); // Reemplaza esto con la forma correcta de obtener el ID del proyecto
-                stmt.setInt(8, idUsuarioAsignado); // Reemplaza esto con la forma correcta de obtener el ID del usuario asignado
+            // Nota: Se ha eliminado la columna 'CALIFICACION' de la consulta
+            String insertQuery = "INSERT INTO tareas (NOMBRE, DESCRIPCION, FECHA_INICIO, FECHA_FIN, FINALIZADA, ID_PROYECTO, ID_USUARIOS) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = connection.prepareStatement(insertQuery);
+            stmt.setString(1, nombre);
+            stmt.setString(2, descripcion);
+            stmt.setDate(3, java.sql.Date.valueOf(fechaInicio));
+            stmt.setDate(4, null); // FECHA_FIN se inicia como null
+            stmt.setBoolean(5, false); // FINALIZADA se inicia como false
+            stmt.setInt(6, idProyecto);
+            stmt.setInt(7, idUsuarioAsignado);
     
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Tarea insertada exitosamente en la base de datos.");
-                } else {
-                    System.out.println("No se pudo insertar la tarea en la base de datos.");
-                }
-                stmt.close();
-        }else{
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Tarea insertada exitosamente en la base de datos.");
+            } else {
+                System.out.println("No se pudo insertar la tarea en la base de datos.");
+            }
+            stmt.close();
+        } else {
             throw new Exception("No se pudo conectar con la base de datos");
         }
-    }
+    }    
 
     public void agregarMiembro(int idProyecto, int idUsuarioAsignado) throws Exception {
         openConnection();
@@ -333,12 +333,8 @@ public class DatabaseConnector {
             int idUsuarioAsignado = resultSet.getInt("id_usuarios");
             boolean finalizada = resultSet.getBoolean("finalizada");
            
-
-            // Aquí determinas si el usuario asignado es un estudiante o un maestro
             Estudiante estudianteAsignado = getEstudianteById(idUsuarioAsignado);
 
-
-            // Asumiendo que la clase Tarea tiene un constructor que acepta un Usuario
             Tarea tarea = new Tarea(idTarea,nombre, estudianteAsignado, fechaInicio, fechaFin, descripcion, idProyecto, idUsuarioAsignado, finalizada);
             tareas.add(tarea);
         }
@@ -399,7 +395,6 @@ public class DatabaseConnector {
         try {
             openConnection();
             if (connection != null) {
-                // Verificar si el proyecto está abierto
                 String checkOpenQuery = "SELECT fecha_fin FROM proyectos WHERE id_proyecto = ?";
                 PreparedStatement checkOpenStatement = connection.prepareStatement(checkOpenQuery);
                 checkOpenStatement.setInt(1, idProyecto);
@@ -419,7 +414,6 @@ public class DatabaseConnector {
                     return;
                 }
     
-                // Actualizar la fecha de finalización del proyecto
                 String updateQuery = "UPDATE proyectos SET fecha_fin = ? WHERE id_proyecto = ?";
                 PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
                 preparedStatement.setDate(1, java.sql.Date.valueOf(fechaCierre));
@@ -494,10 +488,6 @@ public void enviarMensaje(int idProyecto, String contenido, int idUsuarioEmisor)
         throw new Exception("Error inesperado al enviar mensaje: " + ex.getMessage());
     }
 }
-
-    
-    
-    
 
     public void closeConnection() {
         try {
