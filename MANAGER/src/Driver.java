@@ -234,7 +234,6 @@ public static void profesorsMenu() {
     
         System.out.print("Seleccione un proyecto (número): ");
         int projectChoice = scanner.nextInt();
-        scanner.nextLine();
     
         if (projectChoice >= 1 && projectChoice <= proyectosActivos.size()) {
             Proyecto selectedProject = proyectosActivos.get(projectChoice - 1);
