@@ -91,7 +91,7 @@ public class Driver {    public static ArrayList<Usuario> usuarios = null;
                     break;
             }
         }
-        scanner.close();
+        
     }
 
 
